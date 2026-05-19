@@ -7,7 +7,6 @@ const MailRunSchema = new JXPSchema({
     queued_reader_ids: [{ type: ObjectId, link: "reader", map_to: "queued" }],
     sent_reader_ids: [{ type: ObjectId, link: "reader", map_to: "sent" }],
     failed_reader_ids: [{ type: ObjectId, link: "reader", map_to: "sent" }],
-    touchbasetransactional_id: { type: ObjectId, link: "touchbasetransactional" },
     state: { type: String, enum: ['due', 'running', 'complete', 'cancelled', 'paused', 'failed' ] },
     start_time: { type: Date, default: new Date() },
     end_time: Date,

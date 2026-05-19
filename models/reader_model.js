@@ -17,7 +17,6 @@ const ReaderSchema = new JXPSchema({
     cellphone: { type: String, trim: true },
 
     // Links to related collections
-    // touchbasesubscriber_id: [{ type: ObjectId, link: "touchbasesubscriber" }],
     // woocommercecustomer_id: [{ type: ObjectId, link: "WoocommerceCustomer" }],
     // woocommercesubscription_id: [{ type: ObjectId, link: "WoocommerceSubscription" }],
     wordpressuser_id: { type: ObjectId, link: "wordpressuser", index: true }, // DEPRECATED

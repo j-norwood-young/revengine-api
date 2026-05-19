@@ -8,7 +8,6 @@ const HitSchema = new JXPSchema({
     email: { type: String, index: true },
     article_id: { type: ObjectId, link: "article", index: true },
     reader_id: { type: ObjectId, link: "reader", index: true },
-    campaign_id: { type: ObjectId, link: "touchbasecampaign" },
     ip_address: String,
     source: String,
 },

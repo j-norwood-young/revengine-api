@@ -18,8 +18,6 @@ const InteractionSchema = new JXPSchema({
     web_count: { type: Number, index: true },
     books_count: { type: Number, index: true },
     app_count: { type: Number, index: true },
-    touchbasepro_open_count: { type: Number, index: true },
-    touchbasepro_click_count: { type: Number, index: true },
     quicket_count: { type: Number, index: true },
 },
     {
