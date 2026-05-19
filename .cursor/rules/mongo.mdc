@@ -1,0 +1,81 @@
+---
+description: MongoDB collection names and mongodump backup/restore for revengine-api
+globs: models/**/*_model.js
+alwaysApply: false
+---
+
+# Mongo
+
+## Collection naming
+
+Models register with `JXPSchema.model(name, schema)` in `models/*_model.js`. Mongoose pluralizes `name` for the Mongo collection (e.g. `reader` → `readers`, `Label` → `labels`). See [JXP schemas](https://jxp.readthedocs.io/en/latest/schemas/).
+
+Databases: `revengine-dev` (local/docker), `revengine-prod` (production).
+
+## mongodump
+
+**Do not** pass multiple collections in one `-c` (e.g. `-c "labels orders readers"`). That is a single collection name; only the first collection may appear to run.
+
+Use a loop — one collection per invocation:
+
+```bash
+DB=revengine-prod
+COLLECTIONS="apikeys articles configs customer_values dailyhits devices goals hits interactions jobs labels links logs mailers mailruns mlpredictions orders pipelines quicket_tickets readers refreshtokens reports rfvs saved_charts savedcharts scheduled_reports segmentations segments sentmails subscriptions tallies tests tokens usergroups users whitebeardcontents whitebeardcustomers whitebeardnewsletterevents whitebeardnewsletters whitebeardnewsletterstats whitebeardorders whitebeardsubscriptions"
+
+for c in $COLLECTIONS; do
+  mongodump --db "$DB" -c "$c"
+done
+```
+
+With URI: `mongodump --uri="mongodb://localhost:27017/revengine-prod" -c "$c"` inside the loop.
+
+Omit `tests` from `COLLECTIONS` to skip test data. To dump the entire database, omit `-c` and use only `--db` or `--uri`.
+
+## Model → collection map
+
+| Model file | `JXPSchema.model(...)` | Collection |
+|---|---|---|
+| `apikey_model.js` | `APIKey` | `apikeys` |
+| `article_model.js` | `Article` | `articles` |
+| `config_model.js` | `Config` | `configs` |
+| `customer_value_model.js` | `customer_value` | `customer_values` |
+| `dailyhit_model.js` | `DailyHit` | `dailyhits` |
+| `device_model.js` | `Device` | `devices` |
+| `goal_model.js` | `goal` | `goals` |
+| `hit_model.js` | `hit` | `hits` |
+| `interaction_model.js` | `interaction` | `interactions` |
+| `jobs_model.js` | `jobs` | `jobs` |
+| `label_model.js` | `Label` | `labels` |
+| `link_model.js` | `Link` | `links` |
+| `logs_model.js` | `logs` | `logs` |
+| `mailer_model.js` | `Mailer` | `mailers` |
+| `mailrun_model.js` | `mailrun` | `mailruns` |
+| `mlprediction_model.js` | `MLPrediction` | `mlpredictions` |
+| `order_model.js` | `Order` | `orders` |
+| `pipeline_model.js` | `Pipeline` | `pipelines` |
+| `quicket_ticket_model.js` | `quicket_ticket` | `quicket_tickets` |
+| `reader_model.js` | `reader` | `readers` |
+| `refreshtoken_model.js` | `RefreshToken` | `refreshtokens` |
+| `report_model.js` | `report` | `reports` |
+| `rfv_model.js` | `rfv` | `rfvs` |
+| `saved_chart_model.js` | `Saved_Chart` | `saved_charts` |
+| `savedchart_model.js` | `savedchart` | `savedcharts` |
+| `scheduled_report_model.js` | `Scheduled_Report` | `scheduled_reports` |
+| `segment_model.js` | `segment` | `segments` |
+| `segmentation_model.js` | `segmentation` | `segmentations` |
+| `sentmail_model.js` | `sentmail` | `sentmails` |
+| `subscription_model.js` | `Subscription` | `subscriptions` |
+| `tally_model.js` | `tally` | `tallies` |
+| `test_model.js` | `test` | `tests` |
+| `token_model.js` | `Token` | `tokens` |
+| `user_model.js` | `User` | `users` |
+| `usergroups_model.js` | `Usergroup` | `usergroups` |
+| `whitebeard_content_model.js` | `whitebeardcontent` | `whitebeardcontents` |
+| `whitebeard_customer_model.js` | `whitebeardcustomer` | `whitebeardcustomers` |
+| `whitebeard_newsletterevents_model.js` | `whitebeardnewsletterevents` | `whitebeardnewsletterevents` |
+| `whitebeard_newsletters_model.js` | `whitebeardnewsletters` | `whitebeardnewsletters` |
+| `whitebeard_newsletterstats_model.js` | `whitebeardnewsletterstats` | `whitebeardnewsletterstats` |
+| `whitebeard_order_model.js` | `whitebeardorder` | `whitebeardorders` |
+| `whitebeard_subscription_model.js` | `whitebeardsubscription` | `whitebeardsubscriptions` |
+
+There is no `segmentationrules` collection; legacy segments use `segmentations`, v2 uses `segments`.
