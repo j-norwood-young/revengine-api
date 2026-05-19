@@ -9,6 +9,9 @@ const HomeLocationSchema = new JXPSchema({
 HomeLocationSchema.index({ country: 1, region: 1, city: 1, weight: 1 });
 
 const ReaderSchema = new JXPSchema({
+    // External IDs (wordpress_id is a read/write alias for external_id)
+    external_id: { type: Number, index: true, unique: true, alias: 'wordpress_id' },
+    
     // Basics
     email: { type: String, index: true, unique: true, lowercase: true, trim: true, sparse: true },
     display_name: String,
@@ -17,9 +20,6 @@ const ReaderSchema = new JXPSchema({
     cellphone: { type: String, trim: true },
 
     // Links to related collections
-    // woocommercecustomer_id: [{ type: ObjectId, link: "WoocommerceCustomer" }],
-    // woocommercesubscription_id: [{ type: ObjectId, link: "WoocommerceSubscription" }],
-    wordpressuser_id: { type: ObjectId, link: "wordpressuser", index: true }, // DEPRECATED
     whitebeardcustomer_id: { type: ObjectId, link: "whitebeard_customer", index: true },
 
     // Segments and labels
@@ -54,10 +54,6 @@ const ReaderSchema = new JXPSchema({
     subscription_end: { type: Date, index: true },
     subscription_cancellation_request_date: { type: Date, index: true },
     subscription_cancellation_reason: { type: String, index: true },
-
-    // External IDs
-    wordpress_id: { type: Number, index: true, unique: true }, // DEPRECATED, use external_id instead
-    external_id: { type: Number, index: true, unique: true },
 
     user_registered_on_wordpress: Date,
 
