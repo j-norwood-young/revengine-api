@@ -1,0 +1,6 @@
+{
+	"events": {
+		"crash": "kill-port 4001"
+	},
+	"watch": ["models/*", "libs/*", "common/*", "bin/*", "lib/*"]
+}

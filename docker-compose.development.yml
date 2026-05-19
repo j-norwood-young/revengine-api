@@ -1,0 +1,33 @@
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  api:
+    ports:
+      - 3002:3002
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+      - PORT=3002
+      - MONGO_CONNECTION_STRING=mongodb://mongo:27017/revengine-dev
+      - API_SERVER=http://localhost:3002
+      - SUPPRESS_NO_CONFIG_WARNING=true
+    depends_on:
+      mongo:
+        condition: service_healthy
+    extra_hosts: []
+
+volumes:
+  mongo_data:

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -e
+
+component="revengine-api"
+
+echo "Building $component"
+docker build -t $component:latest -f Dockerfile .
+docker tag $component:latest harbor.revengine.dailymaverick.co.za/revengine/$component:latest
+docker push harbor.revengine.dailymaverick.co.za/revengine/$component:latest
+echo "Done building and pushing $component"
