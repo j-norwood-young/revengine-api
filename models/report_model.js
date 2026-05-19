@@ -29,7 +29,7 @@ const ReportSchema = new JXPSchema(
         description: String,
         type: {
             type: String,
-            enum: ["reader", "revenue", "engagement", "segmentation", "custom"],
+            enum: ["reader", "revenue", "engagement", "segment", "custom"],
             default: "custom",
             index: true,
         },

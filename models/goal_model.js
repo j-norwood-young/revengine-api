@@ -2,7 +2,7 @@
 
 const GoalSchema = new JXPSchema({
     name: {type: String, unique: true, required: true },
-    segment_id: [{ type: ObjectId, link: "segmentation" }],
+    segment_id: [{ type: ObjectId, link: "segment" }],
     goals: [{
         date: Date,
         target: Number

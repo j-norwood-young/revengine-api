@@ -20,7 +20,7 @@ Use a loop — one collection per invocation:
 
 ```bash
 DB=revengine-prod
-COLLECTIONS="apikeys articles configs customer_values dailyhits devices goals hits interactions jobs labels links logs mailers mailruns mlpredictions orders pipelines quicket_tickets readers refreshtokens reports rfvs saved_charts savedcharts scheduled_reports segmentations segments sentmails subscriptions tallies tests tokens usergroups users whitebeardcontents whitebeardcustomers whitebeardnewsletterevents whitebeardnewsletters whitebeardnewsletterstats whitebeardorders whitebeardsubscriptions"
+COLLECTIONS="apikeys articles configs customer_values dailyhits devices goals hits interactions jobs labels links logs mailers mailruns mlpredictions orders pipelines quicket_tickets readers refreshtokens reports rfvs saved_charts savedcharts scheduled_reports segments sentmails subscriptions tallies tests tokens usergroups users whitebeardcontents whitebeardcustomers whitebeardnewsletterevents whitebeardnewsletters whitebeardnewsletterstats whitebeardorders whitebeardsubscriptions"
 
 for c in $COLLECTIONS; do
   mongodump --db "$DB" -c "$c"
@@ -62,7 +62,6 @@ Omit `tests` from `COLLECTIONS` to skip test data. To dump the entire database, 
 | `savedchart_model.js` | `savedchart` | `savedcharts` |
 | `scheduled_report_model.js` | `Scheduled_Report` | `scheduled_reports` |
 | `segment_model.js` | `segment` | `segments` |
-| `segmentation_model.js` | `segmentation` | `segmentations` |
 | `sentmail_model.js` | `sentmail` | `sentmails` |
 | `subscription_model.js` | `Subscription` | `subscriptions` |
 | `tally_model.js` | `tally` | `tallies` |
@@ -78,4 +77,3 @@ Omit `tests` from `COLLECTIONS` to skip test data. To dump the entire database, 
 | `whitebeard_order_model.js` | `whitebeardorder` | `whitebeardorders` |
 | `whitebeard_subscription_model.js` | `whitebeardsubscription` | `whitebeardsubscriptions` |
 
-There is no `segmentationrules` collection; legacy segments use `segmentations`, v2 uses `segments`.
