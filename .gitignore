@@ -1,4 +1,5 @@
 node_modules/
+.use-local-jxp
 .env
 access.log
 .DS_Store

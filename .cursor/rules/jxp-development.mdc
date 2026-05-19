@@ -1,0 +1,58 @@
+---
+description: Develop revengine-api alongside the local jxp framework clone
+alwaysApply: true
+---
+
+# JXP + RevEngine API development
+
+This API is built on [JXP](https://github.com/WorkSpaceMan/jxp). Framework changes belong in the **jxp** repo; app-specific models, hooks, and business logic belong in **revengine-api**.
+
+## Repositories
+
+| Repo | Path (local) | Role |
+|------|----------------|------|
+| **revengine-api** | workspace root | RevEngine models, `bin/server.js`, segment/report logic |
+| **jxp** | `../jxp` (sibling clone) | Framework: REST layer, auth, schema base, query/populate |
+
+Open **`revengine-jxp.code-workspace`** (parent `Development/` folder) in Cursor to load both roots in one session.
+
+## Local jxp (live framework edits)
+
+```bash
+# One-time: clone next to this repo
+git clone https://github.com/WorkSpaceMan/jxp.git ../jxp
+cd ../jxp && npm install --legacy-peer-deps
+
+# In revengine-api: use local jxp (creates .use-local-jxp; survives npm install)
+npm run link:jxp
+
+# Back to published npm package
+npm run unlink:jxp
+```
+
+`link:jxp` also symlinks `mongoose` (and `mongoose-friendly`) from this app into `../jxp/node_modules` so both use one connection. Without that, linked jxp loads its own mongoose and queries like `apikeys.findOne()` buffer until timeout.
+
+After changing jxp or re-running `link:jxp`, restart the API (`npm run dev`). Run jxp tests from `../jxp`: `npm test`.
+
+## Version note
+
+- **npm** (`jxp` ^2.15): currently 2.x (e.g. 2.16).
+- **GitHub master** (`../jxp`): 3.x — breaking changes possible when linked.
+
+When linked to master, treat compatibility fixes as part of the jxp 3 upgrade. Prefer fixing framework behavior in jxp when the bug is generic; keep RevEngine-only rules in this repo.
+
+## Where to change what
+
+| Change | Repository |
+|--------|------------|
+| New field type, populate, permissions, generic hooks | `jxp/libs/`, `jxp/models/` |
+| RevEngine models (`reader`, `segment`, …) | `revengine-api/models/` |
+| API-wide hooks / Mongo connection | `revengine-api/bin/server.js` |
+| Deep import e.g. `jxp/libs/query_manipulation` | Framework API — consider exporting from jxp `package.json` `exports` if stabilizing |
+
+## Docs
+
+- Published: [jxp.readthedocs.io](https://jxp.readthedocs.io/)
+- Source README: [github.com/WorkSpaceMan/jxp](https://github.com/WorkSpaceMan/jxp#readme)
+
+Consult @JXP (readthedocs) and the local `../jxp` source when behavior differs from docs.

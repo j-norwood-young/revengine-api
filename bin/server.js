@@ -13,6 +13,11 @@ const apiconfig = {
 	refresh_token_expiry: env.refreshTokenExpiry,
 	shared_secret: env.sharedSecret,
 	apikey: process.env.APIKEY || env.apikey,
+	query_limits: {
+		enabled: true,
+		large_collection_threshold: 10000,
+		max: 1000,
+	},
 };
 
 apiconfig.callbacks = {

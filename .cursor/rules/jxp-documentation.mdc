@@ -5,7 +5,7 @@ alwaysApply: true
 
 # JXP Documentation
 
-This project is built on [JXP](https://jxp.readthedocs.io/) (`jxp` ^2.15). Before implementing or changing JXP-related behavior, **consult @JXP** and follow its patterns instead of guessing from Mongoose or Express conventions alone.
+This project is built on [JXP](https://jxp.readthedocs.io/) (`jxp` ^2.15). Source and local development: [WorkSpaceMan/jxp](https://github.com/WorkSpaceMan/jxp) at `../jxp` when using `npm run link:jxp` (see `jxp-development` rule). Before implementing or changing JXP-related behavior, **consult @JXP** and follow its patterns instead of guessing from Mongoose or Express conventions alone.
 
 ## When to consult @JXP
 
