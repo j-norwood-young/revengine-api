@@ -1,0 +1,38 @@
+---
+description: Require JXP documentation when working on schemas, API behavior, hooks, permissions, or links
+alwaysApply: true
+---
+
+# JXP Documentation
+
+This project is built on [JXP](https://jxp.readthedocs.io/) (`jxp` ^2.15). Before implementing or changing JXP-related behavior, **consult @JXP** and follow its patterns instead of guessing from Mongoose or Express conventions alone.
+
+## When to consult @JXP
+
+Always look up @JXP before work on:
+
+- Schemas (`JXPSchema`, field types, validation, `perms`)
+- Links (`link`, `map_to`, populate/query params)
+- REST API behavior (filtering, searching, pagination, field selection)
+- Hooks (`pre`/`post` on schemas; `pre_hooks`/`callbacks` in `bin/server.js`)
+- Roles, permissions, and groups
+- Stored procedures, aggregations, bulk writes, and advanced queries
+- Authentication, tokens, and refresh tokens
+
+## Project conventions
+
+- Models live in `models/*_model.js` and register with `JXPSchema.model(...)`.
+- `JXPSchema`, `ObjectId`, and `Mixed` are globals — use `/* global JXPSchema */` at the top of model files.
+- Server bootstrap and API hooks are in `bin/server.js`.
+- Internal API calls use `jxp-helper` via `common/apihelper.js` or model-local helpers.
+- Link schema names use PascalCase (`link: "User"`); populate query params use lowercase (`?populate[user]=name`).
+
+## Key doc sections
+
+- [Schemas](https://jxp.readthedocs.io/en/latest/schemas/) — definitions, links, options, pre/post functions
+- [RESTful API](https://jxp.readthedocs.io/en/latest/api/) — GET/POST/PUT/DELETE, populate, filter, search
+- [Roles and Permissions](https://jxp.readthedocs.io/en/latest/roles/)
+- [Hooks](https://jxp.readthedocs.io/en/latest/hooks/)
+- [Aggregations](https://jxp.readthedocs.io/en/latest/aggregations/) and [Queries](https://jxp.readthedocs.io/en/latest/queries/)
+
+If @JXP and existing project code disagree, prefer @JXP unless there is a documented project-specific reason not to.
