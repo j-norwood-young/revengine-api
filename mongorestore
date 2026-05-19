@@ -1,0 +1,44 @@
+#!/bin/bash
+
+set -e
+
+cd "$(dirname "$0")"
+
+COMPOSE=(docker compose -f docker-compose.yml -f docker-compose.development.yml)
+MONGO_URI="mongodb://127.0.0.1:27017/revengine-dev"
+MONGO_HOST="${MONGO_URI%/*}"
+MONGO_DB="${MONGO_URI##*/}"
+
+# Host paths (e.g. ~/Downloads/dump/revengine-prod) are mounted at /restore in a sidecar container.
+args=()
+host_mount_dir=""
+
+for arg in "$@"; do
+	if [[ -e "$arg" ]]; then
+		path="$(cd "$(dirname "$arg")" && pwd)/$(basename "$arg")"
+		if [[ -n "$host_mount_dir" && "$path" != "$host_mount_dir"* ]]; then
+			echo "mongorestore: only one mount directory supported per invocation" >&2
+			exit 1
+		fi
+		if [[ -d "$path" ]]; then
+			host_mount_dir="$path"
+			args+=("/restore")
+		else
+			host_mount_dir="$(dirname "$path")"
+			args+=("/restore/$(basename "$path")")
+		fi
+	else
+		args+=("$arg")
+	fi
+done
+
+if [[ -n "$host_mount_dir" ]]; then
+	mongo_cid="$("${COMPOSE[@]}" ps -q mongo)"
+	exec docker run --rm \
+		--network "container:${mongo_cid}" \
+		-v "${host_mount_dir}:/restore:ro" \
+		mongo:7 \
+		mongorestore --uri="$MONGO_HOST" --db="$MONGO_DB" "${args[@]}"
+fi
+
+exec "${COMPOSE[@]}" exec -T mongo mongorestore --uri="$MONGO_URI" "$@"

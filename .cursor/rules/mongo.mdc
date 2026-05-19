@@ -31,6 +31,23 @@ With URI: `mongodump --uri="mongodb://localhost:27017/revengine-prod" -c "$c"` i
 
 Omit `tests` from `COLLECTIONS` to skip test data. To dump the entire database, omit `-c` and use only `--db` or `--uri`.
 
+## mongorestore
+
+Use `./mongorestore` (wrapper like `./mongosh`). Restores into `revengine-dev` by default.
+
+```bash
+# BSON dump directory on the host (auto-mounts into the container)
+./mongorestore --drop /path/to/dump/revengine-prod
+
+# Single collection file
+./mongorestore --drop --noIndexRestore /path/to/dump/revengine-prod/readers.bson
+
+# Paths already visible inside the mongo container
+./mongorestore --drop /tmp/dump
+```
+
+Prod dump folder name (`revengine-prod`) does not change the target DB; data lands in `revengine-dev`. Use `--noIndexRestore` if index restore fails after documents load (truncated dumps).
+
 ## Model → collection map
 
 | Model file | `JXPSchema.model(...)` | Collection |

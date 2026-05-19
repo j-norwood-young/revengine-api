@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -e
+
+cd "$(dirname "$0")"
+
+COMPOSE=(docker compose -f docker-compose.yml -f docker-compose.development.yml)
+MONGO_URI="mongodb://127.0.0.1:27017/revengine-dev"
+
+exec "${COMPOSE[@]}" exec -T mongo mongodump --uri="$MONGO_URI" "$@"
