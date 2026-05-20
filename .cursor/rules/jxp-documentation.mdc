@@ -14,16 +14,16 @@ Always look up @JXP before work on:
 - Schemas (`JXPSchema`, field types, validation, `perms`)
 - Links (`link`, `map_to`, populate/query params)
 - REST API behavior (filtering, searching, pagination, field selection)
-- Hooks (`pre`/`post` on schemas; `pre_hooks`/`callbacks` in `bin/server.js`)
+- Hooks (`pre`/`post` on schemas; `pre_hooks`/`callbacks` in `src/bin/server.ts`)
 - Roles, permissions, and groups
 - Stored procedures, aggregations, bulk writes, and advanced queries
 - Authentication, tokens, and refresh tokens
 
 ## Project conventions
 
-- Models live in `models/*_model.js` and register with `JXPSchema.model(...)`.
+- Models live in `src/models/*_model.ts` (compiled to `dist/models/*_model.js`) and register with `JXPSchema.model(...)`.
 - `JXPSchema`, `ObjectId`, and `Mixed` are globals — use `/* global JXPSchema */` at the top of model files.
-- Server bootstrap and API hooks are in `bin/server.js`.
+- Server bootstrap and API hooks are in `src/bin/server.ts` (run via `dist/bin/server.js` after `npm run build`).
 - Internal API calls use `jxp-helper` via `common/apihelper.js` or model-local helpers.
 - Link schema names use PascalCase (`link: "User"`); populate query params use lowercase (`?populate[user]=name`).
 

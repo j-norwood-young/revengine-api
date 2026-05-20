@@ -11,5 +11,7 @@ export default defineConfig({
 		include: ["test/e2e/**/*.test.mjs"],
 		testTimeout: 30_000,
 		hookTimeout: 30_000,
+		// E2e hits one API process; avoid parallel /call jobs (apply_segments, apply_labels).
+		fileParallelism: false,
 	},
 });

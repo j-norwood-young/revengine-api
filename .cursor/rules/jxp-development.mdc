@@ -11,7 +11,7 @@ This API is built on [JXP](https://github.com/WorkSpaceMan/jxp). Framework chang
 
 | Repo | Path (local) | Role |
 |------|----------------|------|
-| **revengine-api** | workspace root | RevEngine models, `bin/server.js`, segment/report logic |
+| **revengine-api** | workspace root | RevEngine models (`src/models/`), `src/bin/server.ts`, segment/report logic |
 | **jxp** | `../jxp` (sibling clone) | Framework: REST layer, auth, schema base, query/populate |
 
 Open **`revengine-jxp.code-workspace`** (parent `Development/` folder) in Cursor to load both roots in one session.
@@ -47,7 +47,7 @@ When linked to master, treat compatibility fixes as part of the jxp 3 upgrade. P
 |--------|------------|
 | New field type, populate, permissions, generic hooks | `jxp/libs/`, `jxp/models/` |
 | RevEngine models (`reader`, `segment`, …) | `revengine-api/models/` |
-| API-wide hooks / Mongo connection | `revengine-api/bin/server.js` |
+| API-wide hooks / Mongo connection | `revengine-api/src/bin/server.ts` |
 | Deep import e.g. `jxp/libs/query_manipulation` | Framework API — consider exporting from jxp `package.json` `exports` if stabilizing |
 
 ## Docs

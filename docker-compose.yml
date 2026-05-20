@@ -2,8 +2,8 @@ services:
   api:
     image: jasony/revengine-api
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: revengine-api/Dockerfile
       no_cache: true
     restart: always
     stdin_open: true

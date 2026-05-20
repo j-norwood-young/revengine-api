@@ -1,6 +1,6 @@
 ---
 description: MongoDB collection names and mongodump backup/restore for revengine-api
-globs: models/**/*_model.js
+globs: src/models/**/*_model.ts
 alwaysApply: false
 ---
 
@@ -8,7 +8,7 @@ alwaysApply: false
 
 ## Collection naming
 
-Models register with `JXPSchema.model(name, schema)` in `models/*_model.js`. Mongoose pluralizes `name` for the Mongo collection (e.g. `reader` → `readers`, `Label` → `labels`). See [JXP schemas](https://jxp.readthedocs.io/en/latest/schemas/).
+Models register with `JXPSchema.model(name, schema)` in `src/models/*_model.ts` (JXP loads compiled `dist/models/*_model.js`). Mongoose pluralizes `name` for the Mongo collection (e.g. `reader` → `readers`, `Label` → `labels`). See [JXP schemas](https://jxp.readthedocs.io/en/latest/schemas/).
 
 Databases: `revengine-dev` (local/docker), `revengine-prod` (production).
 

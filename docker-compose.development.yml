@@ -23,7 +23,6 @@ services:
       - PORT=3002
       - MONGO_CONNECTION_STRING=mongodb://mongo:27017/revengine-dev
       - API_SERVER=http://localhost:3002
-      - SUPPRESS_NO_CONFIG_WARNING=true
     depends_on:
       mongo:
         condition: service_healthy
