@@ -13,6 +13,7 @@ RUN apt-get update \
 WORKDIR /usr/src/app
 
 COPY package.json package-lock.json ./
+COPY scripts/jxp-link.js scripts/jxp-link.js
 RUN npm ci --legacy-peer-deps
 
 FROM node:22-bookworm AS builder
