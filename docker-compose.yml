@@ -1,10 +1,9 @@
 services:
   api:
-    image: jasony/revengine-api
+    image: harbor.revengine.dailymaverick.co.za/revengine/revengine-api:latest
     build:
-      context: ..
-      dockerfile: revengine-api/Dockerfile
-      no_cache: true
+      context: .
+      dockerfile: Dockerfile
     restart: always
     stdin_open: true
     tty: true

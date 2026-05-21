@@ -1,8 +1,7 @@
 ##
 # Production API image
 #
-# Build from parent directory so local jxp (file:../jxp) is available until jxp@4 is on npm:
-#   docker build -f revengine-api/Dockerfile -t revengine-api ..
+#   docker build -t revengine-api .
 ##
 
 FROM node:22-bookworm AS deps
@@ -13,11 +12,8 @@ RUN apt-get update \
 
 WORKDIR /usr/src/app
 
-COPY revengine-api/package.json revengine-api/package-lock.json ./
-COPY jxp /usr/src/jxp
-
-RUN sed -i 's|"file:../jxp"|"file:/usr/src/jxp"|' package.json \
-  && npm ci --legacy-peer-deps
+COPY package.json package-lock.json ./
+RUN npm ci --legacy-peer-deps
 
 FROM node:22-bookworm AS builder
 
@@ -25,8 +21,8 @@ WORKDIR /usr/src/app
 
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY --from=deps /usr/src/app/package.json ./package.json
-COPY revengine-api/package-lock.json revengine-api/tsconfig.json revengine-api/tsconfig.build.json ./
-COPY revengine-api/src ./src
+COPY package-lock.json tsconfig.json tsconfig.build.json ./
+COPY src ./src
 
 RUN npm run build && npm prune --omit=dev
 

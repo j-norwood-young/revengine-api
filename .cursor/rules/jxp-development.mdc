@@ -36,10 +36,10 @@ After changing jxp or re-running `link:jxp`, restart the API (`npm run dev`). Ru
 
 ## Version note
 
-- **npm** (`jxp` ^2.15): currently 2.x (e.g. 2.16).
-- **GitHub master** (`../jxp`): 3.x — breaking changes possible when linked.
+- **npm** (`jxp` ^4.0.0): published JXP 4 (TypeScript, Node 22+, security hardening).
+- **Local clone** (`../jxp` via `npm run link:jxp`): optional for framework development; overrides the registry install when `.use-local-jxp` exists.
 
-When linked to master, treat compatibility fixes as part of the jxp 3 upgrade. Prefer fixing framework behavior in jxp when the bug is generic; keep RevEngine-only rules in this repo.
+Prefer fixing generic framework behavior in jxp when linked; keep RevEngine-only rules in this repo.
 
 ## Where to change what
 

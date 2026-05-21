@@ -1,11 +1,59 @@
 #!/bin/bash
+# Build and push versioned images to Harbor.
+#
+# Usage:
+#   ./docker-build              # version from package.json + :latest
+#   ./docker-build 4.0.1        # override version tag
+#   ./docker-build --no-latest  # push only the version tag (no :latest)
+#
+set -euo pipefail
 
-set -e
+cd "$(dirname "$0")"
 
 component="revengine-api"
+registry="harbor.revengine.dailymaverick.co.za/revengine"
+push_latest=1
+version=""
 
-echo "Building $component"
-docker build -t $component:latest -f revengine-api/Dockerfile ..
-docker tag $component:latest harbor.revengine.dailymaverick.co.za/revengine/$component:latest
-docker push harbor.revengine.dailymaverick.co.za/revengine/$component:latest
-echo "Done building and pushing $component"
+for arg in "$@"; do
+	case "$arg" in
+	--no-latest) push_latest=0 ;;
+	-*) echo "Unknown option: $arg" >&2; exit 1 ;;
+	*) version="$arg" ;;
+	esac
+done
+
+if [[ -z "$version" ]]; then
+	version="$(node -p "require('./package.json').version")"
+fi
+
+git_sha=""
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+	git_sha="$(git rev-parse --short HEAD)"
+fi
+
+local_image="${component}:${version}"
+remote_image="${registry}/${component}"
+tags=("${version}")
+
+if [[ -n "$git_sha" ]]; then
+	tags+=("${version}-${git_sha}")
+fi
+if [[ "$push_latest" -eq 1 ]]; then
+	tags+=("latest")
+fi
+
+echo "Building ${component} (version ${version}${git_sha:+, commit ${git_sha}})"
+docker build -t "${local_image}" .
+
+for tag in "${tags[@]}"; do
+	echo "Tagging ${remote_image}:${tag}"
+	docker tag "${local_image}" "${remote_image}:${tag}"
+done
+
+for tag in "${tags[@]}"; do
+	echo "Pushing ${remote_image}:${tag}"
+	docker push "${remote_image}:${tag}"
+done
+
+echo "Done. Pushed tags: ${tags[*]}"
