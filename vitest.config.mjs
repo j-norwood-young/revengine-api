@@ -8,7 +8,7 @@ dotenv.config({ path: path.join(__dirname, ".env") });
 
 export default defineConfig({
 	test: {
-		include: ["test/e2e/**/*.test.mjs"],
+		include: ["test/e2e/**/*.test.mjs", "test/unit/**/*.test.mjs"],
 		testTimeout: 30_000,
 		hookTimeout: 30_000,
 		// E2e hits one API process; avoid parallel /call jobs (apply_segments, apply_labels).
