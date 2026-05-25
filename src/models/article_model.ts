@@ -1,5 +1,6 @@
 import "jxp/globals";
 /* global JXPSchema */
+import { formatSentence, wordCount } from "../lib/word-count";
 
 const ArticleSchema = new JXPSchema({
     post_id: { type: Number, index: true, unique: true },
@@ -64,6 +65,15 @@ const ArticleSchema = new JXPSchema({
 
 ArticleSchema.index({ terms: 1 });
 ArticleSchema.index({ tags: 1 });
+
+ArticleSchema.statics.formatSentence = formatSentence;
+ArticleSchema.statics.wordCount = wordCount;
+
+ArticleSchema.post("findOne", function (doc) {
+	if (!doc) return;
+	const content = doc.content;
+	doc.set("wordcount", wordCount(typeof content === "string" ? content : ""), { strict: false });
+});
 
 const Article = JXPSchema.model('Article', ArticleSchema);
 export = Article;
