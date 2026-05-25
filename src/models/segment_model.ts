@@ -1,5 +1,5 @@
 import "jxp/globals";
-import { buildMongoQueryFromSegmentConditions } from "../libs/segment_query";
+import { buildMongoQueryFromSegmentConditions } from "../lib/segment_query";
 
 /* global JXPSchema ObjectId Mixed */
 

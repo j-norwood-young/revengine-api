@@ -38,7 +38,7 @@ Our release will now be in line with the JXP version.
 
 ### Changed
 
-- **Layout** — `src/bin/server.ts`, `src/lib/env.ts`, `src/common/`, `src/libs/`, `src/models/` (41 models); root-level `bin/`, `lib/`, `common/`, `libs/`, `models/` removed.
+- **Layout** — `src/bin/server.ts`, `src/lib/`, `src/common/`, `src/models/` (41 models); root-level `bin/`, `lib/`, `common/`, `libs/`, `models/` removed.
 - **Server** — uses `JXP(apiconfig)` instead of `new JXP(apiconfig)`; explicit `query_limits` (`default: 100`, `max: 1000`, `large_collection_threshold: 10000`).
 - **E2E reader tests** — use `?count=true` when asserting totals; list-without-limit test accepts HTTP 200 with `limit: 100` (default) or HTTP 400 on very large collections.
 - **Vitest** — `fileParallelism: false` for e2e so heavy `/call` jobs do not run in parallel against one API process.

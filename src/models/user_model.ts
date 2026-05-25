@@ -1,5 +1,5 @@
 import "jxp/globals";
-import send_welcome from "../libs/send_welcome";
+import send_welcome from "../lib/send_welcome";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const friendly = require("mongoose-friendly");
 
