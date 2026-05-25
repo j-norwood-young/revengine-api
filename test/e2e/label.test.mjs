@@ -19,19 +19,30 @@ describe("label API", () => {
 		});
 	});
 
-	describe("POST /call/label/apply_label", () => {
-		it("returns an error when id is omitted", async () => {
+	describe("deprecated apply_label / apply_labels", () => {
+		it("apply_label returns a deprecation warning", async () => {
 			const res = await client.post("/call/label/apply_label", {});
 			expect(res.status).toBe(200);
 
 			const body = await res.json();
 			expect(typeof body).toBe("string");
-			expect(body).toMatch(/id required/i);
+			expect(body).toMatch(/deprecated/i);
+			expect(body).toMatch(/static/i);
 		});
-	});
 
-	it("rejects apply_labels without an API key", async () => {
-		const res = await client.post("/call/label/apply_labels", {}, { apiKey: false });
-		expect(res.status).toBe(403);
+		it("apply_labels returns a deprecation warning when authenticated", async () => {
+			const res = await client.post("/call/label/apply_labels", {});
+			expect(res.status).toBe(200);
+
+			const body = await res.json();
+			expect(typeof body).toBe("string");
+			expect(body).toMatch(/deprecated/i);
+			expect(body).toMatch(/static/i);
+		});
+
+		it("rejects apply_labels without an API key", async () => {
+			const res = await client.post("/call/label/apply_labels", {}, { apiKey: false });
+			expect(res.status).toBe(403);
+		});
 	});
 });

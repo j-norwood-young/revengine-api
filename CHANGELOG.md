@@ -4,6 +4,20 @@ Notable changes to the RevEngine API.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v4.1.2 — 2026-05-25
+
+### Breaking changes
+
+- **Labels are static** — `/call/label/apply_label` and `/call/label/apply_labels` no longer run rules, `fn`, or reader `label_id` updates. Both return a deprecation message: label application is unsupported; labels are now static.
+- **Label save hook removed** — saving a label no longer triggers background application to readers.
+
+### Changed
+
+- **`label_model.ts`** — removed `applyLabel`, bulk reader updates, post-save hook, and unused dependencies (`jxp-helper`, `fix_query`, `simple-statistics`, etc.). Schema fields (`rules`, `fn`, `dirty`, counts) retained for existing documents.
+- **E2E** — `test/e2e/label.test.mjs` expects deprecation warnings from apply endpoints instead of validation errors.
+
+---
+
 ## v4.0.0 — 2026-05-19
 
 Major release: TypeScript rewrite and upgrade to [JXP](https://github.com/WorkSpaceMan/jxp) 4.
