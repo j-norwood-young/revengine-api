@@ -4,3 +4,4 @@ dist/
 .env
 access.log
 .DS_Store
+*.code-workspace
