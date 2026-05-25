@@ -1,0 +1,15 @@
+---
+description: Run linked JXP tests when framework behavior changes
+globs: "{../jxp/**,*}"
+alwaysApply: false
+---
+
+# JXP test suite (linked framework)
+
+When you change **linked jxp** (`../jxp` via `npm run link:jxp`) or JXP-related behavior in this API, run jxp tests before finishing:
+
+```bash
+cd ../jxp && npm run test
+```
+
+RevEngine's own tests do not cover jxp internals. Docs browser settings (`DOCS_ACCESS`, `DOCS_USER_EMAIL`) are implemented in jxp — see `../jxp/.cursor/rules/docs-auth.mdc` and `../jxp/test/docs_auth.test.js`.

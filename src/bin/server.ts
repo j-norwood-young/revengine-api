@@ -1,7 +1,11 @@
+import "../lib/startup-deprecations";
+import path from "path";
 import mongoose from "mongoose";
 import JXP from "jxp";
 import type { JXPConfig } from "jxp/types/jxp-config";
 import env from "../lib/env";
+import { printBanner, printBooting, printReady } from "../lib/startup";
+import pkg from "../../package.json";
 
 const apiconfig: JXPConfig & { cluster_server?: string } = {
 	port: parseInt(process.env.PORT || String(env.port), 10),
@@ -20,6 +24,8 @@ const apiconfig: JXPConfig & { cluster_server?: string } = {
 		default: 100,
 	},
 };
+
+apiconfig.quiet_startup = true;
 
 apiconfig.callbacks = {
 	post: async function () {},
@@ -48,22 +54,54 @@ apiconfig.pre_hooks = {
 mongoose.set("strictQuery", true);
 if (!apiconfig.mongo.options) apiconfig.mongo.options = {};
 const mongo_options = Object.assign({}, apiconfig.mongo.options);
+const connection_string = apiconfig.mongo.connection_string;
 
-mongoose.connect(apiconfig.mongo.connection_string, mongo_options);
+const startupCtx = {
+	name: pkg.name,
+	version: pkg.version,
+	mongoUri: connection_string,
+	accessLog: path.resolve(apiconfig.log || "access.log"),
+	maxPoolSize: mongo_options.maxPoolSize as number | undefined,
+	frontendUrl: env.frontend.url,
+	apiServer: apiconfig.server,
+};
+
+printBanner(startupCtx);
+printBooting(startupCtx);
+
+mongoose.connect(connection_string, mongo_options);
 
 const db = mongoose.connection;
 
-db.on("error", console.error.bind(console, "connection error:"));
+let mongoConnectedAt: Date | null = null;
+let httpUrl: string | null = null;
+let readyPrinted = false;
+
+db.on("error", (err) => {
+	console.error("MongoDB connection error:", err);
+});
 
 db.once("open", () => {
-	console.log(`Connected to Mongo at: ${new Date()}`);
+	mongoConnectedAt = new Date();
+	maybePrintReady();
 });
 
 const server = JXP(apiconfig);
 
 server.listen(apiconfig.port || 4001, function () {
-	console.log("%s listening at %s", server.name, server.url);
-	console.log(`Mongoose version ${mongoose.version}`);
+	httpUrl = server.url;
+	maybePrintReady();
 });
+
+function maybePrintReady(): void {
+	if (readyPrinted || !mongoConnectedAt || !httpUrl) return;
+	readyPrinted = true;
+	printReady({
+		...startupCtx,
+		url: httpUrl,
+		mongooseVersion: mongoose.version,
+		mongoConnectedAt,
+	});
+}
 
 export = server;
