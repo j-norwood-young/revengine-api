@@ -128,6 +128,9 @@ function toSet(a) {
     return [...new Set(a)];
 }
 
+ReaderSchema.index({ segment_id: 1 });
+ReaderSchema.index({ newsletters: 1 });
+
 
 // const Reader 
 const Reader = JXPSchema.model('reader', ReaderSchema);
