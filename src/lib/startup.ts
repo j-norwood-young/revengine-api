@@ -1,3 +1,5 @@
+import type { Connection } from "mongoose";
+
 const c = {
 	reset: "\x1b[0m",
 	bold: "\x1b[1m",
@@ -31,7 +33,22 @@ export interface StartupContext {
 export interface ReadyContext extends StartupContext {
 	url: string;
 	mongooseVersion: string;
+	mongoVersion?: string;
 	mongoConnectedAt: Date;
+}
+
+/** Server version from `buildInfo` (e.g. `7.0.5`). */
+export async function fetchMongoServerVersion(
+	connection: Connection
+): Promise<string | undefined> {
+	try {
+		const db = connection.db;
+		if (!db) return undefined;
+		const { version } = await db.admin().command({ buildInfo: 1 });
+		return typeof version === "string" ? version : undefined;
+	} catch {
+		return undefined;
+	}
 }
 
 export function printBanner(ctx: StartupContext): void {
@@ -85,6 +102,11 @@ export function printReady(ctx: ReadyContext): void {
 	}
 	if (ctx.apiServer) {
 		console.log(`${c.gray}  ├─${c.reset}  ${c.dim}API server${c.reset} ${ctx.apiServer}`);
+	}
+	if (ctx.mongoVersion) {
+		console.log(
+			`${c.gray}  ├─${c.reset}  ${c.dim}Mongo${c.reset}       v${ctx.mongoVersion}${c.reset}`
+		);
 	}
 	console.log(
 		`${c.gray}  └─${c.reset}  ${c.dim}Mongoose${c.reset}   v${ctx.mongooseVersion}${c.reset}`
