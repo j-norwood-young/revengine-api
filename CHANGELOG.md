@@ -4,6 +4,21 @@ Notable changes to the RevEngine API.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v4.2.0 — 2026-05-26
+
+### Changed
+
+- **JXP 4.2.0** — query limits: filtered large-collection lists use the default `?limit=100` without requiring an explicit limit; `?limit=` above max is capped (not 400); responses over 10 MiB return **413**.
+- **`server.ts`** — `query_limits.max_response_size: "10mb"` (human-friendly size string).
+
+### Migration
+
+- Unfiltered `GET /api/<model>` on collections ≥10k documents still requires explicit `?limit=`.
+- Use `?filter[...]` or POST `/query` with a non-empty `query` to list large collections without passing `?limit=`.
+- Clients that sent `?limit=` above 1000 now receive a capped page (`limit_capped: true`) instead of HTTP 400.
+
+---
+
 ## v4.1.2 — 2026-05-25
 
 ### Breaking changes

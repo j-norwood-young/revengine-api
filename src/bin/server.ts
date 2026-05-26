@@ -4,7 +4,12 @@ import mongoose from "mongoose";
 import JXP from "jxp";
 import type { JXPConfig } from "jxp/types/jxp-config";
 import env from "../lib/env";
-import { printBanner, printBooting, printReady } from "../lib/startup";
+import {
+	fetchMongoServerVersion,
+	printBanner,
+	printBooting,
+	printReady,
+} from "../lib/startup";
 import pkg from "../../package.json";
 
 const apiconfig: JXPConfig & { cluster_server?: string } = {
@@ -22,6 +27,7 @@ const apiconfig: JXPConfig & { cluster_server?: string } = {
 		large_collection_threshold: 10000,
 		max: 1000,
 		default: 100,
+		max_response_size: "10mb",
 	},
 };
 
@@ -74,6 +80,7 @@ mongoose.connect(connection_string, mongo_options);
 const db = mongoose.connection;
 
 let mongoConnectedAt: Date | null = null;
+let mongoVersion: string | undefined;
 let httpUrl: string | null = null;
 let readyPrinted = false;
 
@@ -81,7 +88,8 @@ db.on("error", (err) => {
 	console.error("MongoDB connection error:", err);
 });
 
-db.once("open", () => {
+db.once("open", async () => {
+	mongoVersion = await fetchMongoServerVersion(db);
 	mongoConnectedAt = new Date();
 	maybePrintReady();
 });
@@ -100,6 +108,7 @@ function maybePrintReady(): void {
 		...startupCtx,
 		url: httpUrl,
 		mongooseVersion: mongoose.version,
+		mongoVersion,
 		mongoConnectedAt,
 	});
 }

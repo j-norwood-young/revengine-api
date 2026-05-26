@@ -21,18 +21,26 @@ describe("GET /api/reader", () => {
 		expect(body.data.length).toBeGreaterThan(0);
 	});
 
-	it("applies list limits when limit is omitted", async () => {
+	it("requires explicit limit on large unfiltered reader list", async () => {
 		const res = await client.get("/api/reader");
 		const body = await res.json();
 
 		if (res.status === 400) {
-			// Large collection: explicit ?limit= is required
 			expect(body.message).toMatch(/limit/i);
 			return;
 		}
 
-		// Default secure limit (100) when collection is below large threshold
+		// Collection below large threshold in some environments
 		expect(res.status).toBe(200);
+		expect(body.limit).toBe(100);
+		expect(body.data).toEqual(expect.any(Array));
+	});
+
+	it("applies default limit for filtered reader list without limit", async () => {
+		const res = await client.get("/api/reader?filter[paying_customer]=true");
+		expect(res.status).toBe(200);
+
+		const body = await res.json();
 		expect(body.limit).toBe(100);
 		expect(body.data).toEqual(expect.any(Array));
 	});
