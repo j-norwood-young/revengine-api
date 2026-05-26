@@ -33,6 +33,7 @@ const WhitebeardContentSchema = new JXPSchema({
     externalUrl: String,
     sponsor: Mixed,
     authors: [Mixed],
+    byline: String,
     description: String,
     keywords: [Mixed],
     short_summary: String,
