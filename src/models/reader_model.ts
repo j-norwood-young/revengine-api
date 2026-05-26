@@ -7,11 +7,10 @@ const HomeLocationSchema = new JXPSchema({
     city: String,
     weight: Number,
 });
-HomeLocationSchema.index({ country: 1, region: 1, city: 1, weight: 1 });
+HomeLocationSchema.index({ country: 1, region: 1, city: 1, weight: 1 }, { background: true });
 
 const ReaderSchema = new JXPSchema({
-    // External IDs (wordpress_id is a read/write alias for external_id)
-    external_id: { type: Number, index: true, unique: true, alias: 'wordpress_id' },
+    external_id: { type: Number, unique: true, sparse: true, alias: 'wordpress_id' },
     
     // Basics
     email: { type: String, index: true, unique: true, lowercase: true, trim: true, sparse: true },
@@ -30,9 +29,9 @@ const ReaderSchema = new JXPSchema({
     segment_update_v2: { type: Date, alias: 'segment_update' },
 
     // Dates
-    last_login: Date,
-    last_update: Date,
-    first_login: Date,
+    last_login: { type: Date, index: true },
+    last_update: { type: Date, index: true },
+    first_login: { type: Date, index: true },
     user_registered: { type: Date, index: true, default: Date.now },
 
     // Commmercial relationship
@@ -101,18 +100,18 @@ const ReaderSchema = new JXPSchema({
 
     //RFV
     recency_score: { type: Number, index: true },
-    recency: Date,
+    recency: { type: Date, index: true },
     recency_quantile_rank: Number,
     frequency_score: { type: Number, index: true },
-    frequency: Number,
+    frequency: { type: Number, index: true },
     frequency_quantile_rank: Number,
     monetary_value_score: { type: Number, index: true },
-    monetary_value: Number, // per month
+    monetary_value: { type: Number, index: true }, // per month
     volume_score: { type: Number, index: true },
-    volume: Number,
+    volume: { type: Number, index: true },
     volume_quantile_rank: Number,
     total_lifetime_value_score: { type: Number, index: true },
-    total_lifetime_value: Number,
+    total_lifetime_value: { type: Number, index: true },
 
     sent_insider_welcome_email: { type: Date, index: true },
 },
@@ -128,8 +127,20 @@ function toSet(a) {
     return [...new Set(a)];
 }
 
-ReaderSchema.index({ segment_id: 1 });
-ReaderSchema.index({ newsletters: 1 });
+// Segment / subscription list queries (sort by updatedAt)
+ReaderSchema.index({ subscription_status: 1, segment_id: 1, updatedAt: -1 }, { background: true });
+ReaderSchema.index({ segment_id: 1, updatedAt: -1 }, { background: true });
+ReaderSchema.index({ subscription_status: 1, updatedAt: -1 }, { background: true });
+ReaderSchema.index({ segment_id: 1 }, { background: true });
+ReaderSchema.index({ newsletters: 1 }, { background: true });
+ReaderSchema.index({ updatedAt: 1 }, { background: true });
+
+// Legacy reader fields still present in production data
+ReaderSchema.index({ value: 1 }, { background: true });
+ReaderSchema.index({ value_score: 1 }, { background: true });
+ReaderSchema.index({ membership_product: 1 }, { background: true });
+ReaderSchema.index({ lifetime_value_score: 1 }, { background: true });
+ReaderSchema.index({ id: 1 }, { unique: true, sparse: true, background: true });
 
 
 // const Reader 
