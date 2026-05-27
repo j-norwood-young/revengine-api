@@ -3,7 +3,7 @@ import { createApiClient } from "./helpers/client.mjs";
 import { ensureApiReachable } from "./helpers/health.mjs";
 import { wordCount } from "../../dist/lib/word-count.js";
 
-describe("GET /api/article/:id wordcount", () => {
+describe("article wordcount", () => {
 	const client = createApiClient();
 	let articleId;
 	let content;
@@ -25,16 +25,40 @@ describe("GET /api/article/:id wordcount", () => {
 
 		expectedWordcount = wordCount(content);
 		expect(expectedWordcount).toBeGreaterThan(1);
+
+		const putRes = await client.request(`/api/article/${articleId}`, {
+			method: "PUT",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ content }),
+		});
+		expect(putRes.status).toBe(200);
 	});
 
-	it("omits wordcount on list GET", async () => {
-		const res = await client.get("/api/article?limit=1&fields=_id,content");
+	it("returns wordcount on list GET when requested in fields", async () => {
+		const res = await client.get(
+			`/api/article?limit=10&fields=_id,wordcount&filter[_id]=${articleId}`
+		);
 		const body = await res.json();
-		const row = body.data.find((a) => a._id === articleId) ?? body.data[0];
-		expect(row.wordcount).toBeUndefined();
+		const row = body.data.find((a) => a._id === articleId);
+		expect(row).toBeDefined();
+		expect(row.wordcount).toBe(expectedWordcount);
 	});
 
-	it("adds wordcount on single-article GET from content", async () => {
+	it("filters list by wordcount", async () => {
+		const res = await client.get(
+			`/api/article?limit=1&fields=_id,wordcount&filter[wordcount]=$gte:${expectedWordcount}&filter[_id]=${articleId}`
+		);
+		expect(res.status).toBe(200);
+
+		const body = await res.json();
+		expect(body.data.length).toBeGreaterThan(0);
+		expect(body.data[0]).toMatchObject({
+			_id: articleId,
+			wordcount: expectedWordcount,
+		});
+	});
+
+	it("returns persisted wordcount on single-article GET", async () => {
 		const res = await client.get(`/api/article/${articleId}`);
 		expect(res.status).toBe(200);
 

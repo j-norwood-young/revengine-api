@@ -9,6 +9,7 @@ const ArticleSchema = new JXPSchema({
     date_published: { type: Date, index: true },
     date_modified: { type: Date, index: true },
     content: String,
+    wordcount: { type: Number, index: true },
     title: String,
     excerpt: String,
     type: String,
@@ -69,10 +70,10 @@ ArticleSchema.index({ tags: 1 });
 ArticleSchema.statics.formatSentence = formatSentence;
 ArticleSchema.statics.wordCount = wordCount;
 
-ArticleSchema.post("findOne", function (doc) {
-	if (!doc) return;
-	const content = doc.content;
-	doc.set("wordcount", wordCount(typeof content === "string" ? content : ""), { strict: false });
+ArticleSchema.pre("save", function (next) {
+	const content = this.content;
+	this.wordcount = wordCount(typeof content === "string" ? content : "");
+	next();
 });
 
 const Article = JXPSchema.model('Article', ArticleSchema);
