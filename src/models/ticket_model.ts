@@ -8,6 +8,7 @@ const TicketSchema = new JXPSchema({
     event_date: { type: Date, index: true },
     booking_date: { type: Date, index: true },
     seats: [String],
+    seat_count: { type: Number, index: true },
     value: { type: Number, index: true },
     vendor: { type: String, index: true },
     payload: Mixed,
