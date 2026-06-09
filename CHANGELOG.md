@@ -4,6 +4,28 @@ Notable changes to the RevEngine API.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v4.2.3 — 2026-06-09
+
+### Added
+
+- **`ticket` model** — reader-linked event bookings (`event`, `event_date`, `booking_date`, `seats`, `value`, `vendor`, `payload`).
+- **`reader_model.ts`** — payment and subscription tracking, engagement metrics (read depth, bounce rate, clickthrough rate, time on site), content preferences, reader habits (top times/days, newsletters), and additional demographic fields.
+- **`article_model.ts`** — `wordcount` computed on save via a `pre('save')` hook (HTML stripped; logic in `src/lib/word-count.ts`).
+- **`docs/article-wordcount-backfill.md`** — mongosh instructions for backfilling `wordcount` on existing articles.
+- **`whitebeard_content_model.ts`** — `byline` field.
+
+### Changed
+
+- **`reader_model.ts`** — `user_registered` alias `user_registered_on_wordpress`; compound indexes for segment/subscription list queries and legacy production fields.
+- **`server.ts`** — startup log includes MongoDB server version alongside Mongoose version.
+- **JXP** — dependency bumped to `^4.2.0`.
+
+### Removed
+
+- **`apikey_model.ts`** and **`token_model.ts`** — removed; API keys and auth tokens are now provided by JXP built-in models.
+
+---
+
 ## v4.2.0 — 2026-05-26
 
 ### Changed
