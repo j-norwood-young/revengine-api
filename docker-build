@@ -6,6 +6,10 @@
 #   ./docker-build 4.0.1        # override version tag
 #   ./docker-build --no-latest  # push only the version tag (no :latest)
 #
+# To promote :latest (or a version tag) to :stable without rebuilding:
+#   ./docker-promote-stable
+#   npm run docker:stable
+#
 set -euo pipefail
 
 cd "$(dirname "$0")"

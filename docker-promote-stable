@@ -1,0 +1,21 @@
+#!/bin/bash
+# Promote an existing Harbor image tag to :stable (no rebuild).
+#
+# Usage:
+#   ./docker-promote-stable           # promote :latest to :stable
+#   ./docker-promote-stable 4.2.3     # promote a specific version to :stable
+#
+set -euo pipefail
+
+cd "$(dirname "$0")"
+
+component="revengine-api"
+registry="harbor.revengine.dailymaverick.co.za/revengine"
+remote_image="${registry}/${component}"
+source_tag="${1:-latest}"
+
+echo "Promoting ${remote_image}:${source_tag} -> ${remote_image}:stable"
+docker pull "${remote_image}:${source_tag}"
+docker tag "${remote_image}:${source_tag}" "${remote_image}:stable"
+docker push "${remote_image}:stable"
+echo "Done. ${remote_image}:stable now matches :${source_tag}"
