@@ -3,6 +3,7 @@ import "jxp/globals";
 
 const TicketSchema = new JXPSchema({
     reader_id: { type: ObjectId, link: "reader", index: true },
+    external_id: { type: String, index: true },
     event: { type: String, index: true },
     event_date: { type: Date, index: true },
     booking_date: { type: Date, index: true },
