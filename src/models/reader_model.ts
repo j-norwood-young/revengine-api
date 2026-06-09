@@ -32,15 +32,13 @@ const ReaderSchema = new JXPSchema({
     last_login: { type: Date, index: true },
     last_update: { type: Date, index: true },
     first_login: { type: Date, index: true },
-    user_registered: { type: Date, index: true, default: Date.now },
+    user_registered: { type: Date, index: true, default: Date.now, alias: 'user_registered_on_wordpress' },
 
     // Commmercial relationship
     paying_customer: { type: Boolean, index: true, default: false },
     payment_method: { type: String, index: true },
     member: { type: Boolean, index: true, default: false },
     monthly_contribution: { type: Number, index: true, default: 0 },
-    first_payment: { type: Date, index: true },
-    last_payment: { type: Date, index: true },
     subscription_total: { type: Number, index: true, default: 0 },
     subscription_product: { type: String, index: true },
     subscription_period: { type: String, index: true },
@@ -51,23 +49,60 @@ const ReaderSchema = new JXPSchema({
     subscription_cancellation_request_date: { type: Date, index: true },
     subscription_cancellation_reason: { type: String, index: true },
 
-    user_registered_on_wordpress: Date,
+    // Payments
+    first_payment: { type: Date, index: true },
+    last_payment: { type: Date, index: true },
+    successful_payment_count: { type: Number, index: true, default: 0 },
+    successful_payment_total: { type: Number, index: true, default: 0 },
+    payment_failing: { type: Boolean, index: true, default: false },
+    payment_failing_date: { type: Date, index: true },
+    payment_failing_reason: { type: String, index: true },
+    payment_failing_attempts: { type: Number, index: true, default: 0 },
+    payment_failing_last_attempt: { type: Date, index: true },
 
     // Content preferences
-    authors: [{ type: String, index: true }],
-    sections: [{ type: String, index: true }],
-    
-    favourite_author: { type: String, index: true },
-    favourite_section: { type: String, index: true },
+    favourite_authors: [{ type: String, index: true }],
+    favourite_sections: [{ type: String, index: true }],
+    interests: [String],
+    quality_reads: { type: Number, index: true, default: 0 },
+    avg_read_time: { type: Number, index: true, default: 0 },
+    avg_read_time_quantile_rank: { type: Number, index: true, default: 0 },
+    avg_read_depth: { type: Number, index: true, default: 0 },
+    avg_read_depth_quantile_rank: { type: Number, index: true, default: 0 },
+    avg_words_read: { type: Number, index: true, default: 0 },
+    avg_words_read_quantile_rank: { type: Number, index: true, default: 0 },
 
+    // Reader engagement
+    clickthrough_rate: { type: Number, index: true, default: 0 },
+    clickthrough_rate_quantile_rank: { type: Number, index: true, default: 0 },
+    bounce_rate: { type: Number, index: true, default: 0 },
+    bounce_rate_quantile_rank: { type: Number, index: true, default: 0 },
+    time_on_site: { type: Number, index: true, default: 0 },
+    time_on_site_quantile_rank: { type: Number, index: true, default: 0 },
+    pages_per_visit: { type: Number, index: true, default: 0 },
+    pages_per_visit_quantile_rank: { type: Number, index: true, default: 0 },
+    avg_session_duration: { type: Number, index: true, default: 0 },
+    avg_session_duration_quantile_rank: { type: Number, index: true, default: 0 },
+
+    // Reader habits
+    top_times_of_day: [{ type: String, index: true, enum: ['Morning', 'Afternoon', 'Evening', 'Night'] }],
+    top_days_of_week: [{ type: String, index: true, enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] }],
+    top_newsletters: [{ type: String, index: true }],
+
+    // Newsletters and email
     email_state: { type: String, index: true },
     email_client: { type: String, index: true },
     newsletters: [String],
+
+    // Events
+    events: [{ type: String, index: true }],
 
     // Demographics
     gender: { type: String, index: true },
     dob: { type: Date, index: true },
     industry: { type: String, index: true },
+    income: { type: Number, index: true },
+    race: { type: String, index: true },
 
     // User Agent
     app_user: { type: Boolean, index: true, default: false },
