@@ -33,6 +33,12 @@ const apiconfig: JXPConfig & { cluster_server?: string } = {
 
 apiconfig.quiet_startup = true;
 
+apiconfig.mcp = {
+	guideFiles: [path.join(__dirname, "../../mcp/guide.md")],
+	instructions:
+		"RevEngine API: prefer reader, segment, and article models. Always jxp_count before querying large collections. See jxp-guide resource for domain details.",
+};
+
 apiconfig.callbacks = {
 	post: async function () {},
 	put: async function () {},

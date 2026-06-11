@@ -4,6 +4,26 @@ Notable changes to the RevEngine API.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v4.3.0 — 2026-06-11
+
+### Added
+
+- **MCP (Model Context Protocol)** — read-only AI access via JXP 5 when `MCP_ENABLED=true` (endpoint `/mcp`, same port as the API). Uses the logged-in user's API key; permissions match REST `GET`.
+- **`mcp/guide.md`** — RevEngine-specific MCP guide (reader, segment, large-collection safety, common workflows). Wired via `JXPConfig.mcp` in `server.ts`.
+- **Docker** — `mcp/` directory copied into the production image so the project guide is available at runtime.
+
+### Changed
+
+- **JXP** — dependency bumped to `^5.0.0` (MCP server, `jxp-mcp` stdio bridge, LLM instructions + `jxp-guide` resource).
+
+### Deploy notes
+
+1. Publish **`jxp@5.0.0`** to npm first, then build/push this API image (`npm run docker:push`).
+2. Set **`MCP_ENABLED=true`** in production env when you want `/mcp` exposed (off by default in JXP).
+3. **`jxp-mcp`** is for local IDE use (Cursor/LM Studio stdio) — it is **not** run inside the API container. Point `npx jxp-mcp` at `JXP_URL` + `JXP_API_KEY`, or use direct HTTP MCP in Cursor.
+
+---
+
 ## v4.2.3 — 2026-06-09
 
 ### Added

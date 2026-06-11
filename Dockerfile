@@ -38,6 +38,7 @@ ENV PORT=4001
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/package.json ./package.json
 COPY --from=builder /usr/src/app/dist ./dist
+COPY mcp ./mcp
 
 EXPOSE 4001
 

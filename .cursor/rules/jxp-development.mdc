@@ -36,7 +36,7 @@ After changing jxp or re-running `link:jxp`, restart the API (`npm run dev`). Ru
 
 ## Version note
 
-- **npm** (`jxp` ^4.0.0): published JXP 4 (TypeScript, Node 22+, security hardening).
+- **npm** (`jxp` ^5.0.0): published JXP 5 (MCP, TypeScript, Node 22+, security hardening).
 - **Local clone** (`../jxp` via `npm run link:jxp`): optional for framework development; overrides the registry install when `.use-local-jxp` exists.
 
 Prefer fixing generic framework behavior in jxp when linked; keep RevEngine-only rules in this repo.
