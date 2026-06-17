@@ -15,6 +15,7 @@ const OrderSchema = new JXPSchema({
     reader_id: { type: ObjectId, link: "reader", index: true },
     date_completed: { type: Date, index: true },
     status: { type: String, index: true },
+    status_message: { type: String, index: true },
     date_created: { type: Date, index: true, default: Date.now },
     date_modified: { type: Date, index: true, default: Date.now },
     date_paid: { type: Date, index: true },
