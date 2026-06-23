@@ -54,6 +54,37 @@ const ArticleSchema = new JXPSchema({
     dm_user_need: [String],
     dm_disable_comments: Boolean,
     whitebeardcontent_id: { type: ObjectId, link: "whitebeard_content", index: true },
+    /** AI-generated metadata (tags, sentiment, entities, user needs). Human/source fields stay separate. */
+    ai: {
+        tags: [
+            {
+                name: String,
+                confidence: Number,
+                reason: String
+            }
+        ],
+        sentiment: {
+            label: String,
+            score: Number,
+            magnitude: Number,
+            rationale: String
+        },
+        // Mixed: Mongoose mis-parses subdoc arrays with nested mentions: [String] as [String].
+        entities: [Mixed],
+        user_needs: [
+            {
+                need: String,
+                confidence: Number,
+                rationale: String
+            }
+        ],
+        generated_at: { type: Date, index: true },
+        provider_id: String,
+        model: String,
+        template_slug: String,
+        tasks: [String],
+        raw: Mixed
+    },
 },
     {
         perms: {
