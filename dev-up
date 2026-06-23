@@ -1,0 +1,69 @@
+#!/bin/bash
+# Start local RevEngine API development dependencies.
+#
+# MongoDB runs in Docker (host port 27018). Run the API on the host with:
+#   npm run dev
+#
+set -euo pipefail
+
+cd "$(dirname "$0")"
+
+COMPOSE=(docker compose -f docker-compose.yml -f docker-compose.development.yml)
+MONGO_URI="mongodb://localhost:27018/revengine-dev"
+
+if [[ ! -f .env ]]; then
+	echo "Creating .env from .env.example"
+	cp .env.example .env
+	echo "Review .env and set SHARED_SECRET, APIKEY, and mail settings before first use."
+fi
+
+if command -v pnpm >/dev/null 2>&1; then
+	install_cmd=(pnpm install)
+	build_cmd=(pnpm run build)
+elif command -v npm >/dev/null 2>&1; then
+	install_cmd=(npm install --legacy-peer-deps)
+	build_cmd=(npm run build)
+else
+	echo "pnpm or npm is required" >&2
+	exit 1
+fi
+
+if [[ ! -d node_modules ]] || [[ package.json -nt node_modules ]]; then
+	echo "Installing dependencies..."
+	"${install_cmd[@]}"
+fi
+
+echo "Starting MongoDB..."
+if ! "${COMPOSE[@]}" up -d mongo; then
+	# Stale container/network refs after docker prune — recreate mongo.
+	"${COMPOSE[@]}" rm -sf mongo 2>/dev/null || true
+	docker rm -f revengine-api-mongo-1 2>/dev/null || true
+	"${COMPOSE[@]}" up -d mongo
+fi
+
+echo "Waiting for MongoDB at ${MONGO_URI}..."
+for _ in $(seq 1 60); do
+	if "${COMPOSE[@]}" exec -T mongo mongosh --quiet --eval "db.adminCommand('ping').ok" 2>/dev/null | grep -q 1; then
+		break
+	fi
+	sleep 1
+done
+
+if ! "${COMPOSE[@]}" exec -T mongo mongosh --quiet --eval "db.adminCommand('ping').ok" 2>/dev/null | grep -q 1; then
+	echo "MongoDB did not become healthy in time" >&2
+	exit 1
+fi
+
+echo "Building API..."
+"${build_cmd[@]}"
+
+cat <<EOF
+
+Dev environment is ready.
+
+  MongoDB  ${MONGO_URI}
+  API      npm run dev  (http://localhost:4001)
+
+Mongo helpers: ./mongosh, ./mongodump, ./mongoimport, ./mongorestore
+
+EOF
