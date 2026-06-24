@@ -12,9 +12,12 @@ import {
 } from "../lib/startup";
 import pkg from "../../package.json";
 
+// Resolved from server location so cwd does not affect model loading.
+const modelDir = path.join(__dirname, "../models");
+
 const apiconfig: JXPConfig & { cluster_server?: string } = {
 	port: parseInt(process.env.PORT || String(env.port), 10),
-	model_dir: "./dist/models",
+	model_dir: modelDir,
 	server: process.env.API_SERVER || env.server,
 	cluster_server: process.env.API_SERVER || env.clusterServer,
 	mongo: env.mongo,
@@ -82,6 +85,10 @@ printBanner(startupCtx);
 printBooting(startupCtx);
 
 mongoose.connect(connection_string, mongo_options);
+
+// JXP loadAllModels uses apiconfig.model_dir; generateLinks prefers MODEL_DIR env when set.
+// A stale MODEL_DIR (e.g. legacy ./models) loads the same Mongoose models twice → OverwriteModelError.
+process.env.MODEL_DIR = modelDir;
 
 const db = mongoose.connection;
 
