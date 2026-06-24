@@ -22,9 +22,11 @@ const ReaderSchema = new JXPSchema({
     // Links to related collections
     whitebeardcustomer_id: { type: ObjectId, link: "whitebeard_customer", index: true },
 
-    // Segments and labels
+    // Segments, labels, and tags
     label_id: [{ type: ObjectId, link: "Label", map_to: "label" }],
     label_update: Date,
+    tag_id: [{ type: ObjectId, link: "tag", map_to: "tag" }],
+    tag_update: Date,
     segment_id: [{ type: ObjectId, link: "segment", map_to: "segment_v2", alias: 'segmentation_id' }],
     segment_update_v2: { type: Date, alias: 'segment_update' },
 
@@ -167,6 +169,7 @@ ReaderSchema.index({ subscription_status: 1, segment_id: 1, updatedAt: -1 }, { b
 ReaderSchema.index({ segment_id: 1, updatedAt: -1 }, { background: true });
 ReaderSchema.index({ subscription_status: 1, updatedAt: -1 }, { background: true });
 ReaderSchema.index({ segment_id: 1 }, { background: true });
+ReaderSchema.index({ tag_id: 1 }, { background: true });
 ReaderSchema.index({ newsletters: 1 }, { background: true });
 ReaderSchema.index({ updatedAt: 1 }, { background: true });
 
