@@ -1,6 +1,6 @@
 {
 	"name": "revengine-api",
-	"version": "4.3.4",
+	"version": "4.3.5",
 	"description": "The RevEngine RESTful API",
 	"main": "dist/bin/server.js",
 	"engines": {

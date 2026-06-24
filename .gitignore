@@ -5,3 +5,4 @@ dist/
 access.log
 .DS_Store
 *.code-workspace
+data/
