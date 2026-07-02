@@ -4,6 +4,24 @@ Notable changes to the RevEngine API.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v4.4.0 — 2026-07-02
+
+### Added
+
+- **Invoicing on orders** — `order_model.ts` gains `invoice_id` and `invoice_started_at`, assigned by a `pre('save')` hook. Retry chains (e.g. `failed` → `paid`) share one invoice until the order is paid or the chain exceeds a 21-day lifetime, after which a new invoice starts. Logic lives in `src/lib/invoice.ts` (`decideInvoice` / `buildInvoiceId`, pure and unit-tested); invoice keys are `<reader_id>-<MM>-<YYYY>-<uid>`.
+- **`scripts/backfill-invoice-id.mongo.js`** — idempotent one-off backfill that recomputes `invoice_id` / `invoice_started_at` per reader (`./mongosh scripts/backfill-invoice-id.mongo.js`).
+- **`tag` model** — reusable tags (`name`, `color`, `applicable_types` of `reader`/`article`, `description`) with unique name and compound `applicable_types`+`name` index.
+- **AI configuration models** — `ai_providers`, `ai_prompt_templates`, and `ai_mcp_servers` (admin-managed) backing configurable AI providers, prompt templates, and MCP server registrations.
+- **`article_model.ts`** — `ai` subdocument for AI-generated metadata (tags, sentiment, entities, user needs) with provenance (`provider_id`, `model`, `template_slug`, `tasks`, `generated_at`, `raw`), kept separate from human/source fields.
+- **`order_model.ts`** — `status_message` field and a `reader_id`+`date_created` compound index.
+- **`dev-up`** — local development bring-up script.
+
+### Changed
+
+- **`reader_model.ts`** — added `tag_id` (linked to `tag`, `map_to: "tag"`) and `tag_update`, plus a `tag_id` index.
+- **`server.ts`** — model directory is now resolved from the server file location (`__dirname/../models`) instead of a cwd-relative `./dist/models`, and `MODEL_DIR` is set to match so JXP's `loadAllModels`/`generateLinks` don't load models twice (avoids `OverwriteModelError` from a stale legacy `./models`).
+- **Tooling** — repo now pins `pnpm@11.8.0` via `packageManager` and adds a `pnpm-lock.yaml`; `.gitignore` updated to ignore `data`.
+
 ## v4.3.0 — 2026-06-11
 
 ### Added
