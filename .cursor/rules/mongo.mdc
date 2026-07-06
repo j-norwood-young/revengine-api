@@ -12,6 +12,10 @@ Models register with `JXPSchema.model(name, schema)` in `src/models/*_model.ts` 
 
 Databases: `revengine-dev` (local/docker), `revengine-prod` (production).
 
+## Timestamps (`createdAt`, `updatedAt`)
+
+JXP enables `timestamps: true` on every schema by default. All Mongo documents therefore include `createdAt` and `updatedAt` (`Date`), even when a model file does not declare them explicitly. Prefer `updatedAt` for incremental sync, change detection, and “last modified” sorting.
+
 ## mongodump
 
 **Do not** pass multiple collections in one `-c` (e.g. `-c "labels orders readers"`). That is a single collection name; only the first collection may appear to run.
