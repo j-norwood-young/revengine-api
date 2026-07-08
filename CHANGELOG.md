@@ -4,6 +4,24 @@ Notable changes to the RevEngine API.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v4.5.0 — 2026-07-08
+
+### Added
+
+- **`reader_model.ts`** — content-preference fields: `favourite_key_themes`, `favourite_user_needs`, `favourite_tags`, plus `favourite_preferences_updated_at` and `favourite_preferences_last_read_at` for incremental reader-preferences rebuilds.
+- **`src/lib/reader_preferences.ts`** — shared ranking/config helpers (`rankFavourites`, `parseReaderPreferencesConfigJson`, `DEFAULT_READER_PREFERENCES_CONFIG`) used by the RevEngine 2 nightly job and unit tests.
+
+### Changed
+
+- **`segment_query.ts`** — segment builder support for reader string-array fields (`favourite_authors`, `favourite_sections`, `favourite_key_themes`, `favourite_user_needs`, `favourite_tags`, `newsletters`, `tag_id`) with legacy field aliases (`favourite_author` → `favourite_authors`, etc.).
+- **`.cursor/rules/mongo.mdc`** — documents JXP default `createdAt`/`updatedAt` timestamps and the `./mongosh` wrapper for local dev queries.
+
+### Removed
+
+- **`article_model.ts`** — unused per-article hit tracking arrays (`hits`, `unique_hits`, `newsletter_hits`, `logged_in_hits`, `subscriber_hits`, `readers_led_to_subscription`).
+
+---
+
 ## v4.4.0 — 2026-07-02
 
 ### Added
