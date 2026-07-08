@@ -12,6 +12,29 @@ Models register with `JXPSchema.model(name, schema)` in `src/models/*_model.ts` 
 
 Databases: `revengine-dev` (local/docker), `revengine-prod` (production).
 
+## mongosh (dev database)
+
+**Always use the repo wrapper** from `revengine-api` — do not rely on a host-installed `mongosh` or guess the port.
+
+```bash
+cd /path/to/revengine-api
+
+# Interactive shell (revengine-dev)
+./mongosh
+
+# One-off query (preferred for agents/scripts)
+./mongosh --quiet --eval 'db.readers.countDocuments()'
+./mongosh --quiet --eval 'db.jobs.findOne({ key: "reader-preferences" })'
+```
+
+The wrapper runs `docker compose exec` against the `mongo` service and connects to `mongodb://127.0.0.1:27017/revengine-dev` inside the container. The API dev server may use host port `27018`; the wrapper is the supported way to query the same data.
+
+For multi-line or complex queries, pass a heredoc or `.mongo.js` script as additional args after `--eval` is not needed:
+
+```bash
+./mongosh --quiet --file scripts/my-query.mongo.js
+```
+
 ## Timestamps (`createdAt`, `updatedAt`)
 
 JXP enables `timestamps: true` on every schema by default. All Mongo documents therefore include `createdAt` and `updatedAt` (`Date`), even when a model file does not declare them explicitly. Prefer `updatedAt` for incremental sync, change detection, and “last modified” sorting.
