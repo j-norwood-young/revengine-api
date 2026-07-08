@@ -6,6 +6,34 @@
 
 const DEFAULT_LOGICAL = "AND";
 
+/** Reader string-array fields used by segment contains queries. */
+export const READER_STRING_ARRAY_FIELDS = new Set([
+	"favourite_authors",
+	"favourite_sections",
+	"favourite_key_themes",
+	"favourite_user_needs",
+	"favourite_tags",
+	"newsletters",
+	"tag_id",
+]);
+
+/** Legacy segment builder field ids mapped to reader schema paths. */
+export const SEGMENT_FIELD_ALIASES: Record<string, string> = {
+	favourite_author: "favourite_authors",
+	favourite_section: "favourite_sections",
+	authors: "favourite_authors",
+	sections: "favourite_sections",
+};
+
+export function resolveSegmentField(field: unknown): string {
+	if (typeof field !== "string") return "";
+	return SEGMENT_FIELD_ALIASES[field] ?? field;
+}
+
+function isReaderStringArrayField(field: string): boolean {
+	return READER_STRING_ARRAY_FIELDS.has(field);
+}
+
 export function isSafeMongoFieldPath(field: unknown): boolean {
 	if (typeof field !== "string") return false;
 	if (!field.length) return false;
@@ -121,7 +149,8 @@ function normalizeArray(v: unknown): unknown[] {
 
 function buildSingleConditionQuery(cond: Record<string, unknown>): Record<string, unknown> {
 	if (!cond || typeof cond !== "object") throw new Error("Invalid condition");
-	const { field, operator, value } = cond;
+	const { field: rawField, operator, value } = cond;
+	const field = resolveSegmentField(rawField);
 
 	if (!isSafeMongoFieldPath(field)) {
 		throw new Error(`Unsafe field path: ${String(field)}`);
@@ -138,12 +167,18 @@ function buildSingleConditionQuery(cond: Record<string, unknown>): Record<string
 		case "not_equals":
 			return { [field as string]: { $ne: value } };
 		case "contains": {
+			if (isReaderStringArrayField(field)) {
+				return { [field]: String(value) };
+			}
 			const re = escapeRegexLiteral(value);
-			return { [field as string]: { $regex: re, $options: "i" } };
+			return { [field]: { $regex: re, $options: "i" } };
 		}
 		case "not_contains": {
+			if (isReaderStringArrayField(field)) {
+				return { [field]: { $ne: String(value) } };
+			}
 			const re = escapeRegexLiteral(value);
-			return { [field as string]: { $not: { $regex: re, $options: "i" } } };
+			return { [field]: { $not: { $regex: re, $options: "i" } } };
 		}
 		case "starts_with": {
 			const re = `^${escapeRegexLiteral(value)}`;

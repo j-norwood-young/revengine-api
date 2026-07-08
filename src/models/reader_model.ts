@@ -65,6 +65,11 @@ const ReaderSchema = new JXPSchema({
     // Content preferences
     favourite_authors: [{ type: String, index: true }],
     favourite_sections: [{ type: String, index: true }],
+    favourite_key_themes: [{ type: String, index: true }],
+    favourite_user_needs: [{ type: String, index: true }],
+    favourite_tags: [{ type: String, index: true }],
+    favourite_preferences_updated_at: { type: Date, index: true },
+    favourite_preferences_last_read_at: { type: Date, index: true },
     interests: [String],
     quality_reads: { type: Number, index: true, default: 0 },
     avg_read_time: { type: Number, index: true, default: 0 },
@@ -172,6 +177,7 @@ ReaderSchema.index({ segment_id: 1 }, { background: true });
 ReaderSchema.index({ tag_id: 1 }, { background: true });
 ReaderSchema.index({ newsletters: 1 }, { background: true });
 ReaderSchema.index({ updatedAt: 1 }, { background: true });
+ReaderSchema.index({ favourite_preferences_last_read_at: 1 }, { background: true });
 
 // Legacy reader fields still present in production data
 ReaderSchema.index({ value: 1 }, { background: true });

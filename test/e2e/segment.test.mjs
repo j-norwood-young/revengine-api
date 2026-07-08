@@ -71,6 +71,26 @@ describe("segment API", () => {
 			);
 			expect(res.status).toBe(403);
 		});
+
+		it("accepts favourite_authors contains condition", async () => {
+			const res = await client.post("/call/segment/preview_segment", {
+				conditions: [
+					{
+						field: "favourite_authors",
+						operator: "contains",
+						value: "Test Author",
+					},
+				],
+				sampleSize: 1,
+			});
+			expect(res.status).toBe(200);
+
+			const body = await res.json();
+			expect(body).toMatchObject({
+				count: expect.any(Number),
+				readers: expect.any(Array),
+			});
+		});
 	});
 
 	describe("POST /call/segment/apply_segment", () => {
