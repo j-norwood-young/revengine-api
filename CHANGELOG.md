@@ -4,6 +4,18 @@ Notable changes to the RevEngine API.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v4.6.0 — 2026-07-22
+
+### Added
+
+- **`analytics_metric` model** — stores configurable analytics metrics (`slug`, `name`, `enabled`, `default_conditions`, `content_type_overrides`) used by RevEngine 2 Quality Reads and future tunable metrics.
+
+### Changed
+
+- **`.cursor/rules/mongo.mdc`** — documents the `analytics_metrics` collection in the model map and mongodump list.
+
+---
+
 ## v4.5.0 — 2026-07-08
 
 ### Added
