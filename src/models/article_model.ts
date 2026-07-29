@@ -48,6 +48,7 @@ const ArticleSchema = new JXPSchema({
     dm_user_need: [String],
     dm_disable_comments: Boolean,
     whitebeardcontent_id: { type: ObjectId, link: "whitebeard_content", index: true },
+    impact_form_ids: [{ type: ObjectId, link: "tally", index: true }],
     /** AI-generated metadata (tags, sentiment, entities, user needs). Human/source fields stay separate. */
     ai: {
         tags: [

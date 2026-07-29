@@ -6,6 +6,7 @@ const TallySchema = new JXPSchema({
     responseId: { type: String, index: true, unique: true },
     respondentId: { type: String, index: true },
     formName: { type: String, index: true },
+    formId: { type: String, index: true },
     submittedAt: { type: Date, index: true },
     answers: [{
         question: String,
