@@ -4,6 +4,29 @@ Notable changes to the RevEngine API.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v4.6.2 — 2026-07-29
+
+### Added
+
+- **`tally_model.ts`** — `formId` field (indexed).
+- **`article_model.ts`** — `impact_form_ids` link array (indexed) to related tallies.
+
+### Changed
+
+- **`mongoose`** pinned to `6.13.10` to match the JXP dependency version.
+
+---
+
+## v4.6.1 — 2026-07-22
+
+### Changed
+
+- **`jxp`** dependency bumped to `^5.0.3`.
+- **`nodemailer`** dependency bumped to `^9.0.3`.
+- **Overrides** updated (`@hono/node-server`, `uuid`) to match the newer JXP dependency tree.
+
+---
+
 ## v4.6.0 — 2026-07-22
 
 ### Added
