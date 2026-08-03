@@ -1,8 +1,7 @@
 #!/bin/bash
-# Start local RevEngine API development dependencies.
+# Start local RevEngine API development: MongoDB (Docker) + API (host).
 #
-# MongoDB runs in Docker (host port 27018). Run the API on the host with:
-#   npm run dev
+# MongoDB runs in Docker (host port 27018). The API then starts with pnpm/npm run dev.
 #
 set -euo pipefail
 
@@ -20,9 +19,11 @@ fi
 if command -v pnpm >/dev/null 2>&1; then
 	install_cmd=(pnpm install)
 	build_cmd=(pnpm run build)
+	dev_cmd=(pnpm run dev)
 elif command -v npm >/dev/null 2>&1; then
 	install_cmd=(npm install --legacy-peer-deps)
 	build_cmd=(npm run build)
+	dev_cmd=(npm run dev)
 else
 	echo "pnpm or npm is required" >&2
 	exit 1
@@ -62,8 +63,12 @@ cat <<EOF
 Dev environment is ready.
 
   MongoDB  ${MONGO_URI}
-  API      npm run dev  (http://localhost:4001)
+  API      http://localhost:4001
 
 Mongo helpers: ./mongosh, ./mongodump, ./mongoimport, ./mongorestore
 
+Starting API (${dev_cmd[*]})...
+
 EOF
+
+exec "${dev_cmd[@]}"
