@@ -4,6 +4,15 @@ Notable changes to the RevEngine API.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v4.6.3 — 2026-08-03
+
+### Changed
+
+- **`analytics_metric_model.ts`** — supports nested AND/OR condition-expression trees through the new `expression` field. The legacy `default_conditions` and `content_type_overrides` fields remain compatible for one release cycle.
+- **`dev-up`** — starts the API after bringing up MongoDB, using pnpm or npm as available.
+
+---
+
 ## v4.6.2 — 2026-07-29
 
 ### Added
