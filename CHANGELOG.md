@@ -4,6 +4,18 @@ Notable changes to the RevEngine API.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v4.7.0 — 2026-08-11
+
+### Added
+
+- **`whitebeard_campaigns` model** — stores Whitebeard channel posts (campaigns) with rendered HTML and per-link click data from `/cms/channel/post/{id}/preview`, linked to `whitebeard_newsletters`.
+
+### Changed
+
+- **`.cursor/rules/mongo.mdc`** — documents the `whitebeardcampaigns` collection in the model map and mongodump list.
+
+---
+
 ## v4.6.3 — 2026-08-03
 
 ### Changed
