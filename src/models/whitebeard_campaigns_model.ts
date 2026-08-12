@@ -28,7 +28,10 @@ const WhitebeardCampaignLinkSchema = {
 const WhitebeardCampaignsSchema = new JXPSchema(
 	{
 		/** Whitebeard Channel Post id */
-		id: { type: Number, index: true, unique: true },
+		id: { type: Number, index: true },
+
+		/** Combined Whitebeard newsletter id and campaign id */
+		uid: { type: String, index: true, unique: true },
 
 		/** Link back to the parent Whitebeard newsletter channel record in JXP */
 		whitebeard_newsletter_id: { type: ObjectId, link: 'whitebeard_newsletters', index: true },
@@ -74,6 +77,7 @@ WhitebeardCampaignsSchema.index({ sendDate: 1 });
 WhitebeardCampaignsSchema.index({ lastSyncedAt: 1 });
 WhitebeardCampaignsSchema.index({ 'links.link_id': 1 });
 WhitebeardCampaignsSchema.index({ 'links.url': 1 });
+WhitebeardCampaignsSchema.index({ uid: 1 });
 
 const WhitebeardCampaigns = JXPSchema.model(
 	'whitebeardcampaigns',
