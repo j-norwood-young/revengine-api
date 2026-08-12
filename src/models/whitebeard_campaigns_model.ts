@@ -12,7 +12,7 @@ const WhitebeardCampaignLinkSchema = {
 	url: { type: String, index: true },
 	link_id: { type: String, index: true },
 	position: { type: Number, index: true },
-	article_id: { type: ObjectId, link: 'articles', index: true },
+	article_id: { type: ObjectId, link: 'Article', index: true },
 	is_sponsor: String,
 	clicks: Number,
 	clicks_unique: Number,
