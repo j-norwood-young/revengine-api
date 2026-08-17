@@ -47,7 +47,7 @@ Use a loop — one collection per invocation:
 
 ```bash
 DB=revengine-prod
-COLLECTIONS="analytics_metrics apikeys articles configs customer_values dailyhits devices goals hits interactions jobs labels links logs mailers mailruns mlpredictions orders pipelines quicket_tickets readers refreshtokens reports rfvs saved_charts savedcharts scheduled_reports segments sentmails subscriptions tallies tests tokens usergroups users whitebeardcampaigns whitebeardcontents whitebeardcustomers whitebeardnewsletterevents whitebeardnewsletters whitebeardnewsletterstats whitebeardorders whitebeardsubscriptions"
+COLLECTIONS="analytics_metrics apikeys articles configs customer_values dailyhits devices goals hits interactions jobs labels links logs mailers mailruns mlpredictions newsletter_campaigns newsletters orders pipelines quicket_tickets readers refreshtokens reports rfvs saved_charts savedcharts scheduled_reports segments sentmails subscriptions tallies tests tokens usergroups users whitebeardcampaigns whitebeardcontents whitebeardcustomers whitebeardnewsletterevents whitebeardnewsletters whitebeardnewsletterstats whitebeardorders whitebeardsubscriptions"
 
 for c in $COLLECTIONS; do
   mongodump --db "$DB" -c "$c"
@@ -96,6 +96,8 @@ Prod dump folder name (`revengine-prod`) does not change the target DB; data lan
 | `mailer_model.js` | `Mailer` | `mailers` |
 | `mailrun_model.js` | `mailrun` | `mailruns` |
 | `mlprediction_model.js` | `MLPrediction` | `mlpredictions` |
+| `newsletter_campaign_model.js` | `newsletter_campaign` | `newsletter_campaigns` |
+| `newsletter_model.js` | `newsletter` | `newsletters` |
 | `order_model.js` | `Order` | `orders` |
 | `pipeline_model.js` | `Pipeline` | `pipelines` |
 | `quicket_ticket_model.js` | `quicket_ticket` | `quicket_tickets` |
