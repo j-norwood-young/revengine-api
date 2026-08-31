@@ -3,6 +3,7 @@ import "jxp/globals";
 
 const WhitebeardSubscriptionSchema = new JXPSchema({
     id: { type: String, index: true, unique: true },
+    userId: { type: String, index: true },
     activationDate: { type: Date, index: true },
     deactivationDate: { type: Date, index: true },
     status: { type: String, index: true },
