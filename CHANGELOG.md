@@ -4,6 +4,54 @@ Notable changes to the RevEngine API.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v4.8.0 — 2026-08-31
+
+### Added
+
+- **`reader_sync_run` model** — one document per Whitebeard → readers sync job (`jobKey`, `status`, `dryRun`, timing, row counts, `unmappedChannelIds`, `errors`, `phaseDurations`, `report`). Used by RevEngine 2 `whitebeard-reader-sync`.
+- **`reader_sync_change` model** — per-run change rows (`kind`: `create` / `email` / `orphan` / `membership` / `denorm`) with `before`/`after` snapshots. Compound index on `run_id`+`kind`; TTL index expires documents after 90 days.
+- **`wbcustomerexport` model** — staging collection for Whitebeard customer JSONL export rows (`external_id` unique, email, subscription fields, `channel_ids`), used as the sync source before applying to `readers`.
+- **`reader_model.ts`** — `newsletter_id` ObjectId array linking readers to vendor-agnostic `newsletter` records (alongside existing `newsletters` name strings).
+- **`whitebeard_subscription_model.ts`** — `userId` (indexed) so subscriptions can be matched to Whitebeard customers during reader sync.
+
+### Changed
+
+- **JXP** — dependency bumped to `^5.1.0` (typed aggregate `$oid`/`$date` literals; `$in` + `ObjectId()` array rewrite fix).
+- **`nodemon.json`** — crash handler uses `fuser -k 4001/tcp` instead of `kill-port`.
+- **`pnpm-workspace.yaml`** — `allowBuilds` for `dtrace-provider`; `minimumReleaseAgeExclude` for `jxp`.
+
+---
+
+## v4.7.3 — 2026-08-17
+
+### Added
+
+- **`newsletter` model** — vendor-agnostic newsletter list/channel (`provider`, `external_id`, `source_id` → `whitebeard_newsletters`, audience segments, subscriber counts). Unique on `provider`+`external_id`. Whitebeard channels are ingested into `whitebeardnewsletters` and projected here.
+- **`newsletter_campaign` model** — vendor-agnostic send (`uid`, `newsletter_id`, engagement rates computed on save, per-link click/article labels, content-balance rows). HTML remains on `whitebeardcampaigns`; article labels are copied onto `links` at projection time.
+
+### Changed
+
+- **`whitebeard_campaigns_model.ts`** — campaign link `article_id` now links to `Article` (was `articles`, which did not populate).
+- **`.cursor/rules/mongo.mdc`** — documents the `newsletters` and `newsletter_campaigns` collections in the model map and mongodump list.
+
+---
+
+## v4.7.2 — 2026-08-12
+
+### Added
+
+- **`whitebeard_campaigns_model.ts`** — `position` on each campaign link row (indexed).
+
+---
+
+## v4.7.1 — 2026-08-12
+
+### Changed
+
+- **`whitebeard_campaigns_model.ts`** — unique identity is now `uid` (combined Whitebeard newsletter id + campaign id). `id` remains indexed but is no longer unique, so the same channel-post id can exist across newsletters.
+
+---
+
 ## v4.7.0 — 2026-08-11
 
 ### Added
