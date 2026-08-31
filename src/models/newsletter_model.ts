@@ -4,7 +4,7 @@ import "jxp/globals";
 /**
  * Vendor-agnostic newsletter list / channel.
  * Whitebeard channels are ingested into `whitebeardnewsletters` and projected here.
- * `external_id` for provider `whitebeard` is the channel id string stored on `reader.newsletters`.
+ * `external_id` for provider `whitebeard` is the channel id string.
  */
 const NewsletterAudienceSegmentSchema = {
 	segment_id: { type: ObjectId, link: "segment", index: true },
