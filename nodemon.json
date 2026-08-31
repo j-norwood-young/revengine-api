@@ -3,6 +3,6 @@
 	"ext": "ts",
 	"exec": "npm run build && node dist/bin/server.js",
 	"events": {
-		"crash": "kill-port 4001"
+		"crash": "sh -c 'fuser -k 4001/tcp >/dev/null 2>&1 || true'"
 	}
 }
