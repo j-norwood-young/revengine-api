@@ -44,7 +44,10 @@ const NewsletterSchema = new JXPSchema(
 
 		last_sent_at: Date,
 		last_projected_at: { type: Date, index: true },
-		metadata: Mixed
+		metadata: Mixed,
+
+		/** RevEngine-owned taxonomy (Admin). Not set by Whitebeard projection. */
+		tag_id: [{ type: ObjectId, link: "tag", map_to: "tag" }]
 	},
 	{
 		perms: {
@@ -59,6 +62,7 @@ const NewsletterSchema = new JXPSchema(
 NewsletterSchema.index({ provider: 1, external_id: 1 }, { unique: true });
 NewsletterSchema.index({ slug: 1 });
 NewsletterSchema.index({ last_sent_at: -1 });
+NewsletterSchema.index({ tag_id: 1 });
 
 const Newsletter = JXPSchema.model("newsletter", NewsletterSchema);
 export = Newsletter;

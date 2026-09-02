@@ -1,7 +1,7 @@
 import "jxp/globals";
 /* global JXPSchema */
 
-const TAG_APPLICABLE_TYPES = ["reader", "article"] as const;
+const TAG_APPLICABLE_TYPES = ["reader", "article", "newsletter"] as const;
 const DEFAULT_TAG_COLOR = "#3B82F6";
 
 const TagSchema = new JXPSchema(
