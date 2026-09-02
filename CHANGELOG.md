@@ -4,6 +4,15 @@ Notable changes to the RevEngine API.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v4.8.1 — 2026-09-02
+
+### Added
+
+- **`newsletter.tag_id`** — ObjectId array linking lists to `tag` (Admin taxonomy); indexed. Not set by Whitebeard projection.
+- **`tag.applicable_types`** — enum extended with `newsletter` (alongside `reader` and `article`).
+
+---
+
 ## v4.8.0 — 2026-08-31
 
 ### Added
