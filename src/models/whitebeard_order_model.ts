@@ -10,6 +10,8 @@ const WhitebeardOrderSchema = new JXPSchema({
     timestamp: { type: Date, index: true },
     userId: { type: String, index: true },
     paymentMethod: { type: String, index: true },
+    renewal_id: { type: String, index: true },
+    referenceOrderId: { type: String, index: true },
     cart: [Mixed],
     price_matrix: {
         subtotal: Number,

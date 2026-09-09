@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
 	CHAIN_MAX_AGE_DAYS,
 	buildInvoiceId,
+	buildSourceInvoiceId,
 	decideInvoice
 } from "../../dist/lib/invoice.js";
 
@@ -17,6 +18,18 @@ describe("buildInvoiceId", () => {
 			Array.from({ length: 20 }, () => buildInvoiceId("reader-1", chainStart))
 		);
 		expect(ids.size).toBe(20);
+	});
+});
+
+describe("buildSourceInvoiceId", () => {
+	it("uses the provider and authoritative renewal cycle", () => {
+		expect(buildSourceInvoiceId("whitebeard", 9876, 1234)).toBe(
+			"whitebeard-renewal-9876"
+		);
+	});
+
+	it("returns null when renewal_id is unavailable", () => {
+		expect(buildSourceInvoiceId("whitebeard", null, 1234)).toBeNull();
 	});
 });
 
@@ -37,6 +50,42 @@ describe("decideInvoice", () => {
 		const result = decideInvoice({ orderDate, prev: null, readerId });
 
 		expect(result.invoiceId).toMatch(/^reader-1-06-2025-[0-9a-f]{8}$/);
+		expect(result.invoiceStartedAt).toEqual(orderDate);
+	});
+
+	it("uses an authoritative source invoice ID across failed and paid attempts", () => {
+		const chainStart = new Date("2025-06-01T08:00:00.000Z");
+		const sourceInvoiceId = "whitebeard-renewal-9876";
+		const result = decideInvoice({
+			orderDate: new Date("2025-06-03T08:00:00.000Z"),
+			prev: {
+				invoice_id: sourceInvoiceId,
+				invoice_started_at: chainStart,
+				status: "fail",
+				date_created: chainStart
+			},
+			readerId,
+			sourceInvoiceId
+		});
+
+		expect(result.invoiceId).toBe(sourceInvoiceId);
+		expect(result.invoiceStartedAt).toEqual(chainStart);
+	});
+
+	it("starts a new source invoice even when the previous attempt was unpaid", () => {
+		const orderDate = new Date("2025-07-01T08:00:00.000Z");
+		const result = decideInvoice({
+			orderDate,
+			prev: {
+				invoice_id: "whitebeard-renewal-old",
+				invoice_started_at: new Date("2025-06-01T08:00:00.000Z"),
+				status: "fail"
+			},
+			readerId,
+			sourceInvoiceId: "whitebeard-renewal-new"
+		});
+
+		expect(result.invoiceId).toBe("whitebeard-renewal-new");
 		expect(result.invoiceStartedAt).toEqual(orderDate);
 	});
 

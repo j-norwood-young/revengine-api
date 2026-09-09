@@ -1,7 +1,7 @@
 import "jxp/globals";
 /* global JXPSchema ObjectId Mixed */
 
-import { decideInvoice } from "../lib/invoice";
+import { buildSourceInvoiceId, decideInvoice } from "../lib/invoice";
 
 const ProductSchema = new JXPSchema({
     external_id: { type: Number, index: true },
@@ -16,6 +16,8 @@ const OrderSchema = new JXPSchema({
     external_id: { type: Number, index: true },
     invoice_id: { type: String, index: true },
     invoice_started_at: { type: Date, index: true },
+    renewal_id: { type: String, index: true },
+    reference_order_id: { type: String, index: true },
     reader_id: { type: ObjectId, link: "reader", index: true },
     date_completed: { type: Date, index: true },
     status: { type: String, index: true },
@@ -43,21 +45,40 @@ OrderSchema.index({ reader_id: 1, date_created: -1 });
 // Concurrent creates for the same reader may race; the backfill script is the source of truth for history.
 OrderSchema.pre('save', async function(next) {
     try {
-        if (this.invoice_id) return next();
+        const sourceInvoiceId = buildSourceInvoiceId(
+            this.provider,
+            this.renewal_id,
+            this.reference_order_id
+        );
+        if (this.invoice_id && (!sourceInvoiceId || this.invoice_id === sourceInvoiceId)) {
+            return next();
+        }
         if (!this.reader_id) return next();
 
         const orderDate = this.date_created ?? this.date_paid ?? new Date();
+        const previousOrderFilter: Record<string, unknown> = {
+            reader_id: this.reader_id,
+            _id: { $ne: this._id },
+            date_created: { $lte: orderDate }
+        };
+        if (sourceInvoiceId) {
+            previousOrderFilter.provider = this.provider;
+            previousOrderFilter.renewal_id = this.renewal_id;
+            if (this.reference_order_id) {
+                previousOrderFilter.reference_order_id = this.reference_order_id;
+            }
+        } else if (this.reference_order_id) {
+            previousOrderFilter.provider = this.provider;
+            previousOrderFilter.reference_order_id = this.reference_order_id;
+        }
+
         const prev = await (this.constructor as unknown as {
             findOne: (filter: Record<string, unknown>) => {
                 sort: (sort: Record<string, number>) => {
                     select: (fields: string) => { lean: () => Promise<Record<string, unknown> | null> };
                 };
             };
-        }).findOne({
-            reader_id: this.reader_id,
-            _id: { $ne: this._id },
-            date_created: { $lte: orderDate }
-        })
+        }).findOne(previousOrderFilter)
             .sort({ date_created: -1 })
             .select('invoice_id invoice_started_at status date_created')
             .lean();
@@ -65,7 +86,8 @@ OrderSchema.pre('save', async function(next) {
         const { invoiceId, invoiceStartedAt } = decideInvoice({
             orderDate,
             prev,
-            readerId: this.reader_id.toString()
+            readerId: this.reader_id.toString(),
+            sourceInvoiceId
         });
 
         this.invoice_id = invoiceId;
