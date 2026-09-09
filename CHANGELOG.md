@@ -4,6 +4,14 @@ Notable changes to the RevEngine API.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v4.9.1 — 2026-09-09
+
+### Fixed
+
+- **`order` model** — `renewal_id` and `reference_order_id` now use numeric schema types, matching the Whitebeard source data.
+
+---
+
 ## v4.9.0 — 2026-09-09
 
 ### Added
