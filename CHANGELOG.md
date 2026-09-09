@@ -4,6 +4,27 @@ Notable changes to the RevEngine API.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v4.9.0 — 2026-09-09
+
+### Added
+
+- **`subscription_snapshot` model** — daily, immutable subscription-state snapshots for historically accurate commercial reconciliation, unique per snapshot day and subscription.
+- **Provider-backed invoice identity** — generic and Whitebeard orders now store renewal and reference-order identifiers; invoices use stable `<provider>-renewal-<renewal_id>` keys when the provider supplies a renewal cycle.
+- **Commercial reconciliation scripts** — report-only month validation and a safe audit/backfill for missing order and subscription data.
+
+### Changed
+
+- **`mlprediction` model** — supports multiple prediction engines and objectives with model versions, thresholds, risk bands, provenance, feature summaries, metadata, and external reader IDs. Predictions are now unique per reader, engine, and scoring day.
+- **Invoice backfill** — scopes retry chains by provider renewal/reference identifiers, replaces generated invoice IDs with authoritative renewal IDs, limits processing to affected readers, and reports progress.
+
+### Migration notes
+
+- ML prediction writes must now provide `engine`; `type` defaults to `churn`.
+- Before storing multiple engines for the same reader and day, remove the legacy unique MongoDB index on `{ date: 1, reader_id: 1 }` if it still exists.
+- Run the Whitebeard reader sync before `scripts/backfill-invoice-id.mongo.js` so source renewal identifiers are available.
+
+---
+
 ## v4.8.1 — 2026-09-02
 
 ### Added
