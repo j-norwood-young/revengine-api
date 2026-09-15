@@ -12,6 +12,11 @@ var UserSchema = new JXPSchema({
 	password: String,
 	admin: Boolean,
 	temp_hash: String,
+	// JXP MFA (TOTP) — required so Mongoose does not strip these from the shared users collection
+	totp_enabled: { type: Boolean, default: false },
+	totp_secret_enc: String,
+	totp_pending_secret_enc: String,
+	totp_backup_hashes: { type: [String], default: undefined },
 },
 {
 	perms: {
