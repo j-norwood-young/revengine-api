@@ -1,4 +1,6 @@
 #!/bin/bash
+# Interactive mongosh against the development MongoDB container.
+# Uses a TTY when available; falls back to -T for scripts/CI (no TTY).
 
 set -e
 
@@ -7,4 +9,8 @@ cd "$(dirname "$0")"
 COMPOSE=(docker compose -f docker-compose.yml -f docker-compose.development.yml)
 MONGO_URI="mongodb://127.0.0.1:27017/revengine-dev"
 
-exec "${COMPOSE[@]}" exec -it mongo mongosh "$MONGO_URI" "$@"
+if [[ -t 0 && -t 1 ]]; then
+	exec "${COMPOSE[@]}" exec -it mongo mongosh "$MONGO_URI" "$@"
+else
+	exec "${COMPOSE[@]}" exec -T mongo mongosh "$MONGO_URI" "$@"
+fi
