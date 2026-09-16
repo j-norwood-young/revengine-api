@@ -4,6 +4,28 @@ Notable changes to the RevEngine API.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v5.0.0 — 2026-09-16
+
+### Added
+
+- **Admin TOTP recovery** — `pnpm disable-totp` / `scripts/disable-totp.sh` force-disables 2FA for a user when the authenticator or `SHARED_SECRET` is lost (no valid TOTP required).
+- **MFA / WebAuthn env** — optional `MFA_*` and `WEBAUTHN_*` settings documented in `.env.example` for RevEngine 2 Settings and JXP auth.
+
+### Changed
+
+- **JXP** — dependency bumped to `^6.2.0` (from `^5.1.0`).
+- **jxp-helper** — pinned to `3.2.0` (from `^1.4.3`).
+- **`User` model** — explicit TOTP fields so Mongoose does not strip JXP MFA data from the shared `users` collection.
+- **Package manager** — removed `package-lock.json`; installs use pnpm and `pnpm-lock.yaml` only.
+
+### Migration notes
+
+- Deploy with a **JXP 6**–compatible RevEngine 2 frontend (MFA / passkeys) and **jxp-helper 3.x** for any internal API clients.
+- Configure MFA/WebAuthn env vars before enabling 2FA in production; see `.env.example` and JXP `docs/authentication.md`.
+- Locked-out users: `pnpm disable-totp -- user@example.com` (runs against dev mongo via `./mongosh`; adjust for production ops).
+
+---
+
 ## v4.9.1 — 2026-09-09
 
 ### Fixed
