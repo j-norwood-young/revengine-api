@@ -6,3 +6,6 @@ access.log
 .DS_Store
 *.code-workspace
 data/
+package-lock.json
+npm-shrinkwrap.json
+yarn.lock

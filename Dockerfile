@@ -1,10 +1,10 @@
 ##
-# Production API image
+# Production API image (pnpm)
 #
 #   docker build -t revengine-api .
 ##
 
-FROM node:22-bookworm AS deps
+FROM node:22-bookworm AS builder
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends build-essential python3 \
@@ -12,20 +12,16 @@ RUN apt-get update \
 
 WORKDIR /usr/src/app
 
-COPY package.json package-lock.json ./
+RUN corepack enable && corepack prepare pnpm@11.8.0 --activate
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY scripts/jxp-link.js scripts/jxp-link.js
-RUN npm ci --legacy-peer-deps
+RUN pnpm install --frozen-lockfile
 
-FROM node:22-bookworm AS builder
-
-WORKDIR /usr/src/app
-
-COPY --from=deps /usr/src/app/node_modules ./node_modules
-COPY --from=deps /usr/src/app/package.json ./package.json
-COPY package-lock.json tsconfig.json tsconfig.build.json ./
+COPY tsconfig.json tsconfig.build.json ./
 COPY src ./src
 
-RUN npm run build && npm prune --omit=dev
+RUN pnpm run build && pnpm prune --prod
 
 FROM node:22-bookworm-slim AS runner
 

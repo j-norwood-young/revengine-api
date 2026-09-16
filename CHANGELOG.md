@@ -17,6 +17,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **jxp-helper** — pinned to `3.2.0` (from `^1.4.3`).
 - **`User` model** — explicit TOTP fields so Mongoose does not strip JXP MFA data from the shared `users` collection.
 - **Package manager** — removed `package-lock.json`; installs use pnpm and `pnpm-lock.yaml` only.
+- **Docker image** — build uses Corepack + `pnpm install --frozen-lockfile` (no longer requires `package-lock.json` / `npm ci`).
+- **`pnpm-workspace.yaml`** — `minimumReleaseAgeExclude` for `jxp-helper` uses the package name (exact-version excludes failed fresh Docker installs under pnpm’s 24h release-age policy).
 
 ### Migration notes
 

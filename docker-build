@@ -8,7 +8,7 @@
 #
 # To promote :latest (or a version tag) to :stable without rebuilding:
 #   ./docker-promote-stable
-#   npm run docker:stable
+#   pnpm docker:stable
 #
 set -euo pipefail
 
