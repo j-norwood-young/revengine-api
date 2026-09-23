@@ -42,6 +42,8 @@ const SegmentSchema = new JXPSchema(
 
 		customerCount: { type: Number, default: 0 },
 		isActive: { type: Boolean, default: true, index: true },
+		/** Opt-in: mirror this segment as tags in an external system (CMS, CRM, etc.). */
+		tagSync: { type: Boolean, default: false, index: true },
 
 		createdAt: { type: Date, default: Date.now, index: true },
 		updatedAt: { type: Date, default: Date.now, index: true },
