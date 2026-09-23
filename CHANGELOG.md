@@ -4,6 +4,19 @@ Notable changes to the RevEngine API.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v5.1.0 — 2026-09-23
+
+### Added
+
+- **`segment_tag_sync` model** — per-segment sync state for mirroring RevEngine segments to Whitebeard CMS tags (tag name/id, previous names, status, last result, errors). Kept separate from `segment` so sync writes do not re-trigger `applySegment`.
+- **`segment.tagSync`** — opt-in boolean (default `false`, indexed) marking a segment for external tag sync.
+
+### Migration notes
+
+- Required by RevEngine 2 v0.8.0 segment tag sync; no data migration needed (`tagSync` defaults to `false`).
+
+---
+
 ## v5.0.0 — 2026-09-16
 
 ### Added
