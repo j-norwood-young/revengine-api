@@ -86,6 +86,7 @@ Prod dump folder name (`revengine-prod`) does not change the target DB; data lan
 | `customer_value_model.js` | `customer_value` | `customer_values` |
 | `dailyhit_model.js` | `DailyHit` | `dailyhits` |
 | `device_model.js` | `Device` | `devices` |
+| `freshdesk_ticket_model.js` | `freshdesk_ticket` | `freshdesk_tickets` |
 | `goal_model.js` | `goal` | `goals` |
 | `hit_model.js` | `hit` | `hits` |
 | `interaction_model.js` | `interaction` | `interactions` |
