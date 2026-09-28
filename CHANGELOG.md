@@ -4,6 +4,18 @@ Notable changes to the RevEngine API.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v5.1.1 — 2026-09-28
+
+### Added
+
+- **`freshdesk_ticket` model** — stores Freshdesk support tickets as reader interactions (collection `freshdesk_tickets`). Mirrors the Freshdesk ticket payload field-for-field, except Freshdesk's `id`, which is stored as `freshdesk_id` (unique) because `id` is reserved by Mongoose. Adds `reader_id` (link to `reader`) and `requester_email` for reader matching; `custom_fields` is free-form so new `cf_*` fields need no schema change. Indexed on reader, status, priority, source, spam, tags, and Freshdesk `created_at` / `updated_at`, plus a compound `{ reader_id, created_at }` index.
+
+### Migration notes
+
+- No data migration needed. Ingestion is handled outside the API (N8N); upsert on `freshdesk_id` via `/bulkwrite/freshdesk_ticket` (`updateOne` with `upsert: true`, admin API key) so repeat webhook deliveries update rather than duplicate.
+
+---
+
 ## v5.1.0 — 2026-09-23
 
 ### Added
