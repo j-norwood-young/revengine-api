@@ -45,7 +45,13 @@ const ReaderSchema = new JXPSchema({
     subscription_total: { type: Number, index: true, default: 0 },
     subscription_product: { type: String, index: true },
     subscription_period: { type: String, index: true },
-    subscription_status: { type: String, index: true },
+    subscription_status: { type: String, index: true }, // active | on-hold | inactive
+    /** WB status_code 3 or 6 (On hold / On hold retrying). */
+    subscription_on_hold: { type: Boolean, index: true, default: false },
+    /** WB status_code 2 (Active grace period). */
+    subscription_grace_period: { type: Boolean, index: true, default: false },
+    /** WB status_code 7 (Active — renewal disabled). */
+    subscription_renewal_cancelled: { type: Boolean, index: true, default: false },
     subscription_next_payment: { type: Date, index: true },
     subscription_start: { type: Date, index: true },
     subscription_end: { type: Date, index: true },

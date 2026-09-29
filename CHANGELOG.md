@@ -4,6 +4,22 @@ Notable changes to the RevEngine API.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v5.1.2 — 2026-09-29
+
+### Added
+
+- **Reader subscription detail flags** — `subscription_on_hold`, `subscription_grace_period`, and `subscription_renewal_cancelled` (booleans, indexed, default `false`), derived from Whitebeard `status_code` (3/6, 2, and 7 respectively).
+
+### Changed
+
+- **`reader.subscription_status`** — coarse values only: `active` (WB codes 1, 2, 4, 7), `on-hold` (3, 6), or `inactive` (5, 8, 9, and unknown). Fine-grained WB state lives on the new boolean flags.
+
+### Migration notes
+
+- Deploy API before RevEngine 2 builds that write the new fields. Existing readers keep working (`subscription_status` remains a free string; new booleans default false until the next Whitebeard reader sync / denorm).
+
+---
+
 ## v5.1.1 — 2026-09-28
 
 ### Added
