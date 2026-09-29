@@ -9,10 +9,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 
 - **Reader subscription detail flags** — `subscription_on_hold`, `subscription_grace_period`, and `subscription_renewal_cancelled` (booleans, indexed, default `false`), derived from Whitebeard `status_code` (3/6, 2, and 7 respectively).
+- **Subscription detail flags** — `on_hold`, `grace_period`, and `renewal_cancelled` on `Subscription` (same WB code mapping as the reader flags).
 
 ### Changed
 
 - **`reader.subscription_status`** — coarse values only: `active` (WB codes 1, 2, 4, 7), `on-hold` (3, 6), or `inactive` (5, 8, 9, and unknown). Fine-grained WB state lives on the new boolean flags.
+- **`Subscription.status`** — same coarse values (`active` | `on-hold` | `inactive`) as `reader.subscription_status`.
 
 ### Migration notes
 
