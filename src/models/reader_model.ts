@@ -163,6 +163,30 @@ const ReaderSchema = new JXPSchema({
     total_lifetime_value: { type: Number, index: true },
 
     sent_insider_welcome_email: { type: Date, index: true },
+
+    /**
+     * Latest propensity signals denormalized from mlpredictions so live
+     * segments can filter readers without joining collections.
+     */
+    ml_predictions: {
+        churn: {
+            score: { type: Number, index: true },
+            band: { type: String, index: true },
+            prediction: { type: Boolean, index: true },
+            as_of: { type: Date, index: true },
+            /** When the latest score was written (live-segment freshness). */
+            scored_at: { type: Date, index: true },
+            model_version: { type: String },
+        },
+        subscribe: {
+            score: { type: Number, index: true },
+            band: { type: String, index: true },
+            prediction: { type: Boolean, index: true },
+            as_of: { type: Date, index: true },
+            scored_at: { type: Date, index: true },
+            model_version: { type: String },
+        },
+    },
 },
     {
         perms: {
@@ -186,6 +210,16 @@ ReaderSchema.index({ newsletters: 1 }, { background: true });
 ReaderSchema.index({ newsletter_id: 1 }, { background: true });
 ReaderSchema.index({ updatedAt: 1 }, { background: true });
 ReaderSchema.index({ favourite_preferences_last_read_at: 1 }, { background: true });
+ReaderSchema.index(
+	{ "ml_predictions.churn.band": 1, "ml_predictions.churn.as_of": -1 },
+	{ background: true }
+);
+ReaderSchema.index(
+	{ "ml_predictions.subscribe.band": 1, "ml_predictions.subscribe.as_of": -1 },
+	{ background: true }
+);
+ReaderSchema.index({ "ml_predictions.churn.score": 1 }, { background: true });
+ReaderSchema.index({ "ml_predictions.subscribe.score": 1 }, { background: true });
 
 // Legacy reader fields still present in production data
 ReaderSchema.index({ value: 1 }, { background: true });

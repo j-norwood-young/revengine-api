@@ -97,6 +97,7 @@ Prod dump folder name (`revengine-prod`) does not change the target DB; data lan
 | `mailer_model.js` | `Mailer` | `mailers` |
 | `mailrun_model.js` | `mailrun` | `mailruns` |
 | `mlprediction_model.js` | `MLPrediction` | `mlpredictions` |
+| `mlmodel_model.js` | `MLModel` | `mlmodels` |
 | `newsletter_campaign_model.js` | `newsletter_campaign` | `newsletter_campaigns` |
 | `newsletter_model.js` | `newsletter` | `newsletters` |
 | `order_model.js` | `Order` | `orders` |

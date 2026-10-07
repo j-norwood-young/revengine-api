@@ -1,5 +1,5 @@
 import "jxp/globals";
-import { buildMongoQueryFromSegmentConditions } from "../lib/segment_query";
+import { buildMongoQueryFromSegmentConditions, mlSegmentsFilter } from "../lib/segment_query";
 
 /* global JXPSchema ObjectId Mixed */
 
@@ -45,6 +45,12 @@ const SegmentSchema = new JXPSchema(
 		/** Opt-in: mirror this segment as tags in an external system (CMS, CRM, etc.). */
 		tagSync: { type: Boolean, default: false, index: true },
 
+		/** Live ML-backed audience created from the Predictions page. */
+		ml: {
+			source: { type: String, index: true },
+			engine: { type: String, index: true },
+		},
+
 		createdAt: { type: Date, default: Date.now, index: true },
 		updatedAt: { type: Date, default: Date.now, index: true },
 		createdBy: { type: String, index: true },
@@ -54,7 +60,7 @@ const SegmentSchema = new JXPSchema(
 			admin: "crud",
 			user: "r",
 		},
-		callable_statics: ["apply_segments", "apply_segment", "preview_segment"],
+		callable_statics: ["apply_segments", "apply_segment", "preview_segment", "apply_ml_segments"],
 	}
 );
 
@@ -194,6 +200,31 @@ SegmentSchema.statics.apply_segment = async function (data) {
 	}
 };
 
+/** Re-apply only live prediction-backed segments, optionally scoped to one engine. */
+SegmentSchema.statics.apply_ml_segments = async function (data) {
+	try {
+		const query = mlSegmentsFilter(data?.engine);
+		const segments = await Segment.find({ ...query, name: { $exists: 1 } }).sort({
+			updatedAt: -1,
+		});
+		const results = {};
+		for (const segment of segments) {
+			const doc = segment as { name?: string };
+			results[doc.name ?? String(segment._id)] = await applySegment(segment).catch(
+				(err) => `Error applying segment: ${err.toString()}`
+			);
+		}
+		return {
+			count: segments.length,
+			engine: data?.engine ?? "all",
+			results,
+		};
+	} catch (err) {
+		console.error(err);
+		return Promise.reject(err);
+	}
+};
+
 // JXP /call endpoint: /call/segment/preview_segment
 // Returns:
 // - count: number of matching readers
@@ -258,6 +289,8 @@ SegmentSchema.post("save", async function (doc) {
 	await applySegment(doc);
 	if (process.env.NODE_ENV !== "production") console.log(`Done applying segment (v2) ${doc.name}`);
 });
+
+SegmentSchema.index({ "ml.source": 1, "ml.engine": 1, isActive: 1 }, { background: true });
 
 const Segment = JXPSchema.model("segment", SegmentSchema);
 export = Segment;

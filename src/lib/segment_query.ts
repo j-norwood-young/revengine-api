@@ -30,6 +30,18 @@ export function resolveSegmentField(field: unknown): string {
 	return SEGMENT_FIELD_ALIASES[field] ?? field;
 }
 
+/** Mongo filter for prediction-backed live segments. */
+export function mlSegmentsFilter(engine?: unknown): Record<string, unknown> {
+	const query: Record<string, unknown> = {
+		"ml.source": "predictions",
+		_deleted: { $ne: true },
+	};
+	if (engine === "churn" || engine === "subscribe") {
+		query["ml.engine"] = engine;
+	}
+	return query;
+}
+
 function isReaderStringArrayField(field: string): boolean {
 	return READER_STRING_ARRAY_FIELDS.has(field);
 }
@@ -285,7 +297,7 @@ export function buildMongoQueryFromSegmentConditions(
 	const orGroups: Record<string, unknown>[][] = [];
 
 	for (let i = 0; i < conditions.length; i++) {
-		const cond = conditions[i];
+		const cond = repairPredictionFreshnessCondition(conditions[i]);
 		const connector =
 			i === 0
 				? DEFAULT_LOGICAL
@@ -308,4 +320,70 @@ export function buildMongoQueryFromSegmentConditions(
 	}
 
 	return { $or: orGroups.map((group) => (group.length === 1 ? group[0] : { $and: group })) };
+}
+
+const ML_AS_OF_FIELD = /^ml_predictions\.(churn|subscribe)\.as_of$/;
+const ML_SCORED_AT_FIELD = /^ml_predictions\.(churn|subscribe)\.scored_at$/;
+
+function isRelativeDateValue(value: unknown): boolean {
+	return !!value && typeof value === "object" && (value as { mode?: unknown }).mode === "relative";
+}
+
+function isRollingDateEndpoint(value: unknown): boolean {
+	return value === "now" || isRelativeDateValue(value);
+}
+
+function dateBetweenEndpoints(value: unknown): [unknown, unknown] | null {
+	if (Array.isArray(value) && value.length === 2) return [value[0], value[1]];
+	if (value && typeof value === "object") {
+		const v = value as { from?: unknown; to?: unknown };
+		if (v.from !== undefined || v.to !== undefined) return [v.from, v.to];
+	}
+	return null;
+}
+
+function conditionUsesRelativeDate(operator: unknown, value: unknown): boolean {
+	if (operator === "date_before" || operator === "date_after") {
+		return isRollingDateEndpoint(value);
+	}
+	if (operator === "date_between") {
+		const endpoints = dateBetweenEndpoints(value);
+		if (endpoints) return endpoints.some(isRollingDateEndpoint);
+	}
+	return false;
+}
+
+/** Live freshness filters on as_of (now→future) match 0 readers; rewrite onto scored_at. */
+export function repairPredictionFreshnessCondition(
+	cond: Record<string, unknown>
+): Record<string, unknown> {
+	const src =
+		cond && typeof (cond as { toObject?: () => Record<string, unknown> }).toObject === "function"
+			? (cond as { toObject: () => Record<string, unknown> }).toObject()
+			: { ...cond };
+
+	const field = typeof src.field === "string" ? src.field : "";
+	const isAsOf = ML_AS_OF_FIELD.test(field);
+	const isScoredAt = ML_SCORED_AT_FIELD.test(field);
+	if (!isAsOf && !isScoredAt) return src;
+
+	const value = src.value;
+	const rolling = conditionUsesRelativeDate(src.operator, value);
+	const endpoints = src.operator === "date_between" ? dateBetweenEndpoints(value) : null;
+
+	let nextValue = value;
+	if (
+		endpoints &&
+		endpoints[0] === "now" &&
+		isRelativeDateValue(endpoints[1]) &&
+		(endpoints[1] as { direction?: unknown }).direction === "future"
+	) {
+		nextValue = [{ ...(endpoints[1] as object), direction: "past" }, "now"];
+	}
+
+	return {
+		...src,
+		field: isAsOf && rolling ? field.replace(/\.as_of$/, ".scored_at") : field,
+		value: nextValue,
+	};
 }

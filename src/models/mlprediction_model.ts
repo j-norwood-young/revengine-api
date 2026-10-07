@@ -44,6 +44,21 @@ const MLPredictionSchema = new JXPSchema(
 		feature_summary: { type: Mixed },
 		/** Engine-specific extras (pageviews_used, onnx path, run_id, …). */
 		metadata: { type: Mixed },
+
+		/**
+		 * Resolved label after the engine horizon elapses.
+		 * null until evaluation; true/false once observed. Do not store derived
+		 * "correctness" — compare against `prediction` in queries.
+		 */
+		outcome: { type: Boolean, index: true },
+		/** When the actual event happened (cancel/conversion), if known. */
+		outcome_event_at: { type: Date, index: true },
+		/** When evaluation wrote the outcome. */
+		outcome_observed_at: { type: Date, index: true },
+		/** e.g. subscription_history | orders */
+		outcome_source: { type: String },
+		/** Label window in days (30 churn / 90 subscribe). */
+		outcome_horizon_days: { type: Number },
 	},
 	{
 		perms: {
@@ -52,6 +67,7 @@ const MLPredictionSchema = new JXPSchema(
 			user: "r",
 			all: "",
 		},
+		callable_statics: ["sync_reader_signals"],
 	}
 );
 
@@ -63,6 +79,89 @@ MLPredictionSchema.index(
 MLPredictionSchema.index({ type: 1, date: -1, score: -1 }, { background: true });
 MLPredictionSchema.index({ engine: 1, risk: 1, date: -1 }, { background: true });
 MLPredictionSchema.index({ external_id: 1, engine: 1, date: -1 }, { background: true });
+MLPredictionSchema.index({ engine: 1, outcome: 1, as_of: 1 }, { background: true });
+MLPredictionSchema.index({ type: 1, outcome: 1, as_of: 1 }, { background: true });
+MLPredictionSchema.index(
+	{ engine: 1, as_of: 1 },
+	{ background: true, partialFilterExpression: { outcome: { $exists: false } } }
+);
+
+const SIGNAL_TYPES = ["churn", "subscribe"] as const;
+
+type SignalDoc = {
+	reader_id?: unknown;
+	score?: number;
+	risk?: string;
+	prediction?: boolean;
+	as_of?: Date;
+	date?: Date;
+	model_version?: string;
+};
+const SIGNAL_BATCH = 1000;
+
+/**
+ * Denormalize the latest scoring batch of each engine onto readers.ml_predictions.*
+ * so live segments match without waiting for the next scoring run. Idempotent.
+ * Optional data.engine: "churn" | "subscribe" limits the sync to one engine.
+ */
+MLPredictionSchema.statics.sync_reader_signals = async function (data) {
+	const Reader = require("./reader_model");
+	const types = SIGNAL_TYPES.filter((t) => !data?.engine || data.engine === t);
+	const summary: Record<string, unknown> = {};
+
+	for (const type of types) {
+		const [latest] = (await MLPrediction.find({ type, _deleted: { $ne: true } })
+			.sort({ date: -1 })
+			.limit(1)
+			.lean()) as SignalDoc[];
+		if (!latest) {
+			summary[type] = { synced: 0, date: null };
+			continue;
+		}
+
+		let ops: unknown[] = [];
+		let synced = 0;
+		const flush = async () => {
+			if (!ops.length) return;
+			await Reader.bulkWrite(ops, { ordered: false });
+			synced += ops.length;
+			ops = [];
+		};
+
+		const cursor = (MLPrediction.find({
+			type,
+			date: latest.date,
+			_deleted: { $ne: true },
+		})
+			.select("reader_id score risk prediction as_of date model_version")
+			.lean()
+			.cursor() as unknown) as AsyncIterable<SignalDoc>;
+
+		for await (const doc of cursor) {
+			if (!doc.reader_id) continue;
+			ops.push({
+				updateOne: {
+					filter: { _id: doc.reader_id },
+					update: {
+						$set: {
+							[`ml_predictions.${type}.score`]: doc.score,
+							[`ml_predictions.${type}.band`]: doc.risk ?? null,
+							[`ml_predictions.${type}.prediction`]: doc.prediction,
+							[`ml_predictions.${type}.as_of`]: doc.as_of,
+							[`ml_predictions.${type}.scored_at`]: doc.date,
+							[`ml_predictions.${type}.model_version`]: doc.model_version ?? null,
+						},
+					},
+				},
+			});
+			if (ops.length >= SIGNAL_BATCH) await flush();
+		}
+		await flush();
+		summary[type] = { synced, date: latest.date };
+	}
+
+	return summary;
+};
 
 const MLPrediction = JXPSchema.model("MLPrediction", MLPredictionSchema);
 export = MLPrediction;
