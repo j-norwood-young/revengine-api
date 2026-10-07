@@ -4,6 +4,22 @@ Notable changes to the RevEngine API.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v5.2.0 — 2026-10-07
+
+### Added
+
+- **`MLModel` model** — champion / versioned propensity model metadata (`mlmodels`) for the Predictions UI (engine, metrics, feature importance, ONNX keys).
+- **`MLPrediction` enhancements** — outcome / evaluation fields; `sync_reader_signals` static denormalizes the latest score batch onto readers.
+- **`reader.ml_predictions`** — denormalized churn and subscribe score, band, prediction, `as_of`, `scored_at`, and `model_version` for live segment filters.
+- **ML-backed segments** — segment fields and `apply_ml_segments` static to re-apply only prediction-backed audiences (optionally per engine).
+- **`mlSegmentsFilter`** — segment query helper for prediction-backed segments.
+
+### Migration notes
+
+- Required by RevEngine 2 v0.9.0 Predictions / ML segments. No data migration; `ml_predictions` populate on the next scoring run / `sync_reader_signals`. Deploy API before the frontend.
+
+---
+
 ## v5.1.2 — 2026-09-29
 
 ### Added
