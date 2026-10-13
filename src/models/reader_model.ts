@@ -116,7 +116,15 @@ const ReaderSchema = new JXPSchema({
     dob: { type: Date, index: true },
     industry: { type: String, index: true },
     income: { type: Number, index: true },
+    income_band: { type: String, index: true },
+    home_language: { type: String, index: true },
+    work_position: { type: String, index: true },
     race: { type: String, index: true },
+
+    // Tally form responses (denormalised from tallies collection)
+    form_response_count: { type: Number, index: true, default: 0 },
+    last_form_response_date: { type: Date, index: true },
+    form_names: [{ type: String, index: true }],
 
     // User Agent
     app_user: { type: Boolean, index: true, default: false },
