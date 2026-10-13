@@ -4,6 +4,19 @@ Notable changes to the RevEngine API.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v5.4.0 — 2026-10-13
+
+### Added
+
+- **`comment` model** — normalised article comments (provider, external id, reader/article/parent links, status, likes/dislikes, toxicity and sentiment scores, timestamp). Prefer this collection for product queries.
+- **`whitebeardcomment` model** — raw Whitebeard ArticleComment payloads (`whitebeardcomments`), including nested `replies` as returned by the CMS API.
+
+### Migration notes
+
+- No data migration. Collections are empty until ingestion (e.g. N8N / sync) upserts documents. Deploy API before any frontend or pipeline that reads these models.
+
+---
+
 ## v5.3.0 — 2026-10-13
 
 ### Added
