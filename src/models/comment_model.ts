@@ -8,12 +8,12 @@ import "jxp/globals";
 const CommentSchema = new JXPSchema({
     provider: { type: String, index: true, enum: ['whitebeard'] },
     external_id: { type: String, index: true },
-    whitebeardcomment_id: { type: ObjectId, link: "whitebeardcomment", index: true },
+    whitebeardcomment_id: { type: ObjectId, link: "whitebeard_comment", index: true },
 
     reader_id: { type: ObjectId, link: "reader", index: true },
     article_id: { type: ObjectId, link: "Article", index: true },
     /** Reply threading — null/undefined for top-level comments. */
-    parent_id: { type: ObjectId, link: "comment", index: true },
+    parent_id: { type: ObjectId, link: "comment", map_to: "parent", index: true },
 
     comment: { type: String, required: true },
     status: { type: String, index: true }, // approved | pending | declined | spam | trash
