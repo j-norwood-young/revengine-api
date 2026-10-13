@@ -4,6 +4,19 @@ Notable changes to the RevEngine API.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v5.3.0 — 2026-10-13
+
+### Added
+
+- **Reader demographic fields** — `income_band`, `home_language`, and `work_position` (indexed strings), populated from Tally form submissions.
+- **Reader form-response fields** — `form_response_count` (default `0`), `last_form_response_date`, and `form_names`, denormalised from the `tallies` collection.
+
+### Migration notes
+
+- Required by RevEngine 2 v0.10.0 Tally reader sync and Demographics / Forms segment fields. No data migration; fields populate on the next `tally-reader-sync` run. Deploy API before the frontend.
+
+---
+
 ## v5.2.0 — 2026-10-07
 
 ### Added
