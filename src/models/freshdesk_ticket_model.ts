@@ -46,8 +46,8 @@ const FreshdeskTicketSchema = new JXPSchema({
     revengine_needs_reply: { type: Number, index: true },
     revengine_ticket_type: { type: String, index: true },
     revengine_group: { type: String, index: true },
-    revengine_incorrect: { type: Boolean, index: true },
     revengine_priority: { type: String, index: true },
+    revengine_incorrect: { type: Boolean, index: true },
 },
 {
     perms: {
