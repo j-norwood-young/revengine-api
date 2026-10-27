@@ -4,6 +4,14 @@ Notable changes to the RevEngine API.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## Unreleased
+
+### Removed
+
+- **`sentmail` model** — unused leftover from the old mailer stack; not referenced by RevEngine 2. Mongo collection `sentmails` is unchanged (drop separately if desired).
+
+---
+
 ## v5.4.0 — 2026-10-13
 
 ### Added
