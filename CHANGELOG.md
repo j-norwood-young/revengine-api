@@ -4,7 +4,15 @@ Notable changes to the RevEngine API.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## Unreleased
+## v5.4.1 — 2026-10-27
+
+### Added
+
+- **Freshdesk AI categorisation fields** — `revengine_needs_reply`, `revengine_ticket_type`, `revengine_group`, `revengine_priority`, and `revengine_incorrect` (human override) on `freshdesk_ticket`.
+
+### Fixed
+
+- **`comment` model links** — `whitebeardcomment_id` links to `whitebeard_comment`; `parent_id` uses `map_to: "parent"`.
 
 ### Removed
 
