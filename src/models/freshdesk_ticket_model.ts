@@ -43,6 +43,11 @@ const FreshdeskTicketSchema = new JXPSchema({
     fr_due_by: Date,
     created_at: { type: Date, index: true },
     updated_at: { type: Date, index: true },
+    revengine_needs_reply: { type: Number, index: true },
+    revengine_ticket_type: { type: String, index: true },
+    revengine_group: { type: String, index: true },
+    revengine_incorrect: { type: Boolean, index: true },
+    revengine_priority: { type: String, index: true },
 },
 {
     perms: {
