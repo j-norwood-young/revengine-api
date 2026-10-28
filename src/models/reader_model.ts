@@ -173,6 +173,14 @@ const ReaderSchema = new JXPSchema({
     sent_insider_welcome_email: { type: Date, index: true },
 
     /**
+     * Membership onboarding funnel stage (assigned daily by membership-funnel job).
+     * Values: cold | warming | engaged | mission_aligned | insider | lapsed
+     */
+    funnel_stage: { type: String, index: true },
+    /** When the reader entered the current funnel_stage. */
+    funnel_stage_since: { type: Date, index: true },
+
+    /**
      * Latest propensity signals denormalized from mlpredictions so live
      * segments can filter readers without joining collections.
      */
@@ -218,6 +226,8 @@ ReaderSchema.index({ newsletters: 1 }, { background: true });
 ReaderSchema.index({ newsletter_id: 1 }, { background: true });
 ReaderSchema.index({ updatedAt: 1 }, { background: true });
 ReaderSchema.index({ favourite_preferences_last_read_at: 1 }, { background: true });
+ReaderSchema.index({ funnel_stage: 1, funnel_stage_since: 1 }, { background: true });
+ReaderSchema.index({ funnel_stage: 1, updatedAt: -1 }, { background: true });
 ReaderSchema.index(
 	{ "ml_predictions.churn.band": 1, "ml_predictions.churn.as_of": -1 },
 	{ background: true }
